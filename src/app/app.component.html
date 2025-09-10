@@ -1,0 +1,22 @@
+<!-- src/app/app.component.html -->
+<div class="container-fluid">
+  <!-- Header simple -->
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" routerLink="/">
+        🍳 InduKitchen
+      </a>
+      <div class="navbar-nav flex-row">
+        <a class="nav-link mx-2 text-white" routerLink="/products">Productos</a>
+        <a class="nav-link mx-2 text-white" routerLink="/cart">Carrito</a>
+        <a class="nav-link mx-2 text-white" routerLink="/login">Login</a>
+        <a class="nav-link mx-2 text-white" routerLink="/register">Registro</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="container mt-4">
+    <router-outlet></router-outlet>
+  </main>
+</div>

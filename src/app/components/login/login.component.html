@@ -1,0 +1,74 @@
+<!-- src/app/components/login/login.component.html -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <!-- Header con icono -->
+      <div class="text-center mb-4">
+        <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+             style="width: 80px; height: 80px;">
+          <i class="fas fa-sign-in-alt text-white" style="font-size: 2rem;"></i>
+        </div>
+        <h2 class="fw-bold text-primary">Iniciar Sesión</h2>
+        <p class="text-muted">Bienvenido de vuelta a InduKitchen</p>
+      </div>
+
+      <!-- Tarjeta del formulario -->
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-5">
+          <form (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+            
+            <!-- Campo Email -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Email *</label>
+              <input type="email" class="form-control form-control-lg" 
+                     [(ngModel)]="loginData.email" name="email" 
+                     placeholder="tu.email@ejemplo.com" required>
+              <div class="form-text">Ingresa tu email registrado</div>
+            </div>
+
+            <!-- Campo Contraseña -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Contraseña *</label>
+              <input type="password" class="form-control form-control-lg" 
+                     [(ngModel)]="loginData.password" name="password" 
+                     placeholder="Tu contraseña" required>
+              <div class="form-text">Ingresa tu contraseña</div>
+            </div>
+
+            <!-- Mensaje de error -->
+            <div class="alert alert-danger mt-4" *ngIf="errorMessage" role="alert">
+              <i class="fas fa-exclamation-circle me-2"></i>
+              {{ errorMessage }}
+            </div>
+
+            <!-- Botón de enviar -->
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-primary btn-lg fw-semibold py-3" [disabled]="isLoading">
+                <span *ngIf="!isLoading">
+                  <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                </span>
+                <span *ngIf="isLoading">
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Iniciando sesión...
+                </span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Enlace a registro -->
+          <div class="text-center mt-4 pt-3 border-top">
+            <p class="text-muted mb-0">¿No tienes cuenta aún?</p>
+            <a routerLink="/register" class="btn btn-outline-primary mt-2">
+              <i class="fas fa-user-plus me-2"></i>Crear Cuenta
+            </a>
+          </div>
+
+          <!-- Opción adicional (simulada) -->
+          <div class="text-center mt-3">
+            <a href="#" class="text-muted small">¿Olvidaste tu contraseña?</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
