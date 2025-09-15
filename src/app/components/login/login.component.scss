@@ -1,14 +1,17 @@
 // src/app/components/login/login.component.scss
 
-// Variables locales
-$primary-color: #007bff;
-$secondary-color: #6c757d;
+// Variables locales con la nueva paleta de colores
+$primary-color: #F54927;
+$primary-dark: #d13a1a;
+$primary-light: rgba(245, 73, 39, 0.15);
+$secondary-color: #2C3E50;
 $success-color: #28a745;
 $danger-color: #dc3545;
 $warning-color: #ffc107;
 $info-color: #17a2b8;
 $light-color: #f8f9fa;
 $dark-color: #343a40;
+$text-muted: #6c757d;
 
 // Estilos del componente
 .login-container {
@@ -16,6 +19,22 @@ $dark-color: #343a40;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   display: flex;
   align-items: center;
+  padding: 1rem;
+}
+
+.login-icon-container {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  i {
+    color: white;
+    font-size: 2rem;
+  }
 }
 
 .card {
@@ -37,43 +56,62 @@ $dark-color: #343a40;
   
   &:focus {
     border-color: $primary-color;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(245, 73, 39, 0.25);
   }
   
   &::placeholder {
-    color: #6c757d;
+    color: $text-muted;
     opacity: 0.7;
+  }
+}
+
+.input-group-text {
+  background-color: white;
+  border: 2px solid #e9ecef;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+}
+
+.password-toggle {
+  background-color: white;
+  border: 2px solid #e9ecef;
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  color: $text-muted;
+  
+  &:hover {
+    color: $primary-color;
   }
 }
 
 .form-label {
   font-weight: 600;
-  color: #495057;
+  color: $secondary-color;
   margin-bottom: 0.5rem;
 }
 
 .form-text {
   font-size: 0.875rem;
-  color: #6c757d;
+  color: $text-muted;
   margin-top: 0.25rem;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, $primary-color 0%, #0056b3 100%);
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
   border: none;
   border-radius: 10px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  padding: 0.75rem 1.5rem;
   transition: all 0.3s ease;
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(245, 73, 39, 0.3);
+    background: linear-gradient(135deg, $primary-dark 0%, #b52d10 100%);
   }
   
   &:disabled {
-    background: $secondary-color;
+    background: $text-muted;
     transform: none;
     box-shadow: none;
   }
@@ -103,19 +141,12 @@ $dark-color: #343a40;
     color: #721c24;
     border-left: 4px solid $danger-color;
   }
-}
-
-.text-primary {
-  color: $primary-color !important;
-}
-
-.bg-primary {
-  background: linear-gradient(135deg, $primary-color 0%, #0056b3 100%) !important;
-}
-
-/* Iconos */
-.fas {
-  font-size: 1.1em;
+  
+  &.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border-left: 4px solid $success-color;
+  }
 }
 
 /* Responsive */
@@ -136,10 +167,10 @@ $dark-color: #343a40;
 
 @media (max-width: 576px) {
   .card .card-body {
-    padding: 1rem;
+    padding: 1.25rem;
   }
   
-  h2 {
-    font-size: 1.5rem;
+  .login-container {
+    padding: 0.5rem;
   }
 }

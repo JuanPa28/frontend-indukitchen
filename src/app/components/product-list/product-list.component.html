@@ -1,26 +1,29 @@
-<div class="container-fluid py-4">
-  <!-- Header -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center">
-        <h1 class="h2 fw-bold text-primary">
-          <i class="fas fa-utensils me-2"></i>Productos Disponibles
-        </h1>
-        <span class="badge bg-primary fs-6">
-          {{ filteredProducts.length }} productos
-        </span>
+<!-- src/app/components/product-list/product-list.component.html -->
+<div class="product-list-container">
+  <div class="container-fluid py-4">
+    
+    <!-- Header con filtros y título -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <h2 class="fw-bold mb-3">Nuestros Productos</h2>
+        <p class="text-muted">Descubre los mejores productos para tu hogar</p>
       </div>
-    </div>
-  </div>
-
-  <!-- Filtros -->
-  <div class="row mb-4">
-    <div class="col-md-6 mb-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body">
-          <label class="form-label fw-semibold">Categoría</label>
-          <select class="form-select" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
-            <option value="all">Todas las categorías</option>
+      <div class="col-md-6">
+        <div class="d-flex gap-2 justify-content-md-end flex-md-row flex-column">
+          <!-- Filtro de búsqueda -->
+          <div class="search-container position-relative mb-2 mb-md-0">
+            <i class="fas fa-search position-absolute"></i>
+            <input type="text" class="form-control search-input" 
+                   placeholder="Buscar productos..." 
+                   [(ngModel)]="searchTerm"
+                   (input)="applyFilters()">
+          </div>
+          
+          <!-- Filtro de categorías -->
+          <select class="form-select category-filter" 
+                  [(ngModel)]="selectedCategory" 
+                  (change)="applyFilters()">
+            <option value="">Todas las categorías</option>
             <option *ngFor="let category of categories" [value]="category">
               {{ getCategoryDisplayName(category) }}
             </option>
@@ -29,109 +32,122 @@
       </div>
     </div>
 
-    <div class="col-md-6 mb-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body">
-          <label class="form-label fw-semibold">Ordenar por</label>
-          <select class="form-select" [(ngModel)]="sortOrder" (change)="onSortChange()">
-            <option value="name">Nombre (A-Z)</option>
-            <option value="price-asc">Precio: Menor a Mayor</option>
-            <option value="price-desc">Precio: Mayor a Menor</option>
-          </select>
-        </div>
+    <!-- Loading state -->
+    <div class="text-center py-5" *ngIf="isLoading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
       </div>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="text-center py-5">
-    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-      <span class="visually-hidden">Cargando...</span>
-    </div>
-    <p class="mt-3 text-muted">Cargando productos...</p>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="errorMessage && !isLoading" class="alert alert-warning">
-    <i class="fas fa-exclamation-triangle me-2"></i>
-    {{ errorMessage }}
-  </div>
-
-  <!-- Product Grid -->
-  <div *ngIf="!isLoading" class="row">
-    <!-- No products message -->
-    <div *ngIf="filteredProducts.length === 0" class="col-12">
-      <div class="text-center py-5">
-        <i class="fas fa-search fa-3x text-muted mb-3"></i>
-        <h4 class="text-muted">No se encontraron productos</h4>
-        <p class="text-muted">Intenta con otros filtros</p>
-      </div>
+      <p class="mt-3 text-muted">Cargando productos...</p>
     </div>
 
-    <!-- Product Cards -->
-    <div *ngFor="let product of filteredProducts" class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-4">
-      <div class="card h-100 product-card shadow-sm border-0">
-        <!-- Product Image -->
-        <div class="position-relative">
-          <span *ngIf="product.stock < 5 && product.stock > 0" class="position-absolute top-0 end-0 m-2 badge bg-warning">Pocas unidades</span>
-          <span *ngIf="product.stock === 0" class="position-absolute top-0 end-0 m-2 badge bg-danger">Agotado</span>
-          <div class="product-image-container">
-            <img [src]="product.image" 
+    <!-- Mensaje de no productos -->
+    <div class="alert alert-info" *ngIf="!isLoading && filteredProducts.length === 0">
+      <i class="fas fa-info-circle me-2"></i>
+      No se encontraron productos que coincidan con tu búsqueda.
+    </div>
+
+    <!-- Grid de productos -->
+    <div class="row g-4" *ngIf="!isLoading && filteredProducts.length > 0">
+      <div class="col-xl-3 col-lg-4 col-md-6" *ngFor="let product of paginatedProducts">
+        <div class="product-card card h-100 border-0 shadow-sm">
+          
+          <!-- Imagen del producto -->
+          <div class="product-image-container position-relative">
+            <img [src]="product.imageUrl" 
                  [alt]="product.name"
-                 class="card-img-top product-image"
-                 (error)="handleImageError($event, product)"
-                 loading="lazy">
-          </div>
-        </div>
-
-        <!-- Product Body -->
-        <div class="card-body d-flex flex-column">
-          <!-- Category Badge -->
-          <div class="mb-2">
-            <span class="badge bg-primary text-uppercase">
-              {{ getCategoryDisplayName(product.category) }}
+                 class="product-image"
+                 (error)="handleImageError($event)">
+            
+            <!-- Badge de estado -->
+            <span class="position-absolute top-0 end-0 m-2 badge" 
+                  [ngClass]="{
+                    'bg-success': product.stock > 10,
+                    'bg-warning': product.stock > 0 && product.stock <= 10,
+                    'bg-danger': product.stock === 0
+                  }">
+              {{ product.stock > 0 ? (product.stock + ' en stock') : 'Agotado' }}
             </span>
           </div>
 
-          <!-- Product Name -->
-          <h5 class="card-title text-dark fw-bold">{{ product.name }}</h5>
-
-          <!-- Product Description -->
-          <p class="card-text text-muted small flex-grow-1">
-            {{ product.description }}
-          </p>
-
-          <!-- Product Price -->
-          <div class="mb-2">
-            <h4 class="text-success fw-bold">
-              {{ product.price | currency:'COP':'symbol':'1.0-0' }}
-            </h4>
-          </div>
-
-          <!-- Stock Information -->
-          <div class="mb-3">
-            <small class="fw-semibold" [ngClass]="getStockClass(product.stock)">
-              <i class="fas fa-box me-1"></i>
-              {{ product.stock === 0 ? 'Sin stock' : product.stock + ' unidades disponibles' }}
-            </small>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="d-grid gap-2 mt-auto">
-            <button class="btn btn-primary btn-sm" 
-                    (click)="addToCart(product)"
-                    [disabled]="product.stock === 0">
-              <i class="fas fa-shopping-cart me-1"></i>
-              {{ product.stock === 0 ? 'Sin Stock' : 'Agregar al Carrito' }}
-            </button>
+          <!-- Contenido de la tarjeta -->
+          <div class="card-body d-flex flex-column">
+            <!-- Categoría -->
+            <div class="mb-2">
+              <span class="badge bg-light text-dark">{{ getCategoryDisplayName(product.category) }}</span>
+            </div>
             
-            <button class="btn btn-outline-primary btn-sm" 
-                    (click)="addToFavorites(product)">
-              <i class="fas fa-heart me-1"></i>
-              Favorito
-            </button>
+            <!-- Nombre del producto -->
+            <h5 class="card-title product-title">{{ product.name }}</h5>
+            
+            <!-- Descripción -->
+            <p class="card-text text-muted small flex-grow-1">
+              {{ truncateText(product.description, 100) }}
+            </p>
+            
+            <!-- Precio y rating -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <span class="h5 fw-bold text-primary mb-0">
+                  {{ product.price | currency:'COP':'symbol':'1.0-0' }}
+                </span>
+              </div>
+              <div *ngIf="product.rating" class="d-flex align-items-center">
+                <i class="fas fa-star text-warning me-1"></i>
+                <small class="text-muted">{{ product.rating }}</small>
+              </div>
+            </div>
+
+            <!-- Acciones - CORREGIDO -->
+            <div class="card-actions">
+              <div class="action-buttons">
+                <button class="action-btn primary" 
+                        (click)="addToCart(product)"
+                        [disabled]="product.stock === 0">
+                  <span class="btn-content">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="btn-text">
+                      {{ product.stock > 0 ? 'Agregar al carrito' : 'Agotado' }}
+                    </span>
+                  </span>
+                </button>
+                
+                <button class="action-btn secondary" 
+                        (click)="viewDetails(product)">
+                  <span class="btn-content">
+                    <i class="fas fa-eye"></i>
+                    <span class="btn-text">Ver detalles</span>
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div class="row mt-5" *ngIf="!isLoading && filteredProducts.length > 0 && totalPages > 1">
+      <div class="col-12">
+        <nav aria-label="Product pagination">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" (click)="changePage(currentPage - 1)">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+            </li>
+            
+            <li class="page-item" *ngFor="let page of getPages()" 
+                [class.active]="page === currentPage">
+              <a class="page-link" (click)="changePage(page)">{{ page }}</a>
+            </li>
+            
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <a class="page-link" (click)="changePage(currentPage + 1)">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   </div>

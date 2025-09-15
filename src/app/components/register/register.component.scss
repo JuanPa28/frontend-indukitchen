@@ -1,19 +1,40 @@
 // src/app/components/register/register.component.scss
 
-// Variables locales (para evitar imports)
-$primary-color: #007bff;
-$secondary-color: #6c757d;
+// Variables locales con la nueva paleta de colores
+$primary-color: #F54927;
+$primary-dark: #d13a1a;
+$primary-light: rgba(245, 73, 39, 0.15);
+$secondary-color: #2C3E50;
 $success-color: #28a745;
 $danger-color: #dc3545;
 $warning-color: #ffc107;
 $info-color: #17a2b8;
 $light-color: #f8f9fa;
 $dark-color: #343a40;
+$text-muted: #6c757d;
 
 // Estilos del componente
 .register-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+
+.register-icon-container {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  i {
+    color: white;
+    font-size: 2rem;
+  }
 }
 
 .card {
@@ -26,6 +47,17 @@ $dark-color: #343a40;
   }
 }
 
+.section-title {
+  color: $primary-color;
+  border-bottom: 2px solid $primary-light;
+  padding-bottom: 0.75rem;
+  font-weight: 600;
+  
+  i {
+    color: $primary-color;
+  }
+}
+
 .form-control {
   border: 2px solid #e9ecef;
   border-radius: 10px;
@@ -35,43 +67,63 @@ $dark-color: #343a40;
   
   &:focus {
     border-color: $primary-color;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(245, 73, 39, 0.25);
   }
   
   &::placeholder {
-    color: #6c757d;
+    color: $text-muted;
     opacity: 0.7;
+  }
+}
+
+.input-group-text {
+  background-color: white;
+  border: 2px solid #e9ecef;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  color: $text-muted;
+}
+
+.password-toggle {
+  background-color: white;
+  border: 2px solid #e9ecef;
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  color: $text-muted;
+  
+  &:hover {
+    color: $primary-color;
   }
 }
 
 .form-label {
   font-weight: 600;
-  color: #495057;
+  color: $secondary-color;
   margin-bottom: 0.5rem;
 }
 
 .form-text {
   font-size: 0.875rem;
-  color: #6c757d;
+  color: $text-muted;
   margin-top: 0.25rem;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 15%) 100%);
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
   border: none;
   border-radius: 10px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  padding: 0.75rem 1.5rem;
   transition: all 0.3s ease;
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(245, 73, 39, 0.3);
+    background: linear-gradient(135deg, $primary-dark 0%, #b52d10 100%);
   }
   
   &:disabled {
-    background: $secondary-color;
+    background: $text-muted;
     transform: none;
     box-shadow: none;
   }
@@ -97,30 +149,25 @@ $dark-color: #343a40;
   padding: 1rem 1.5rem;
   
   &.alert-danger {
-    background: linear-gradient(135deg, lighten($danger-color, 40%) 0%, lighten($danger-color, 30%) 100%);
-    color: darken($danger-color, 20%);
+    background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
+    color: #721c24;
     border-left: 4px solid $danger-color;
+  }
+  
+  &.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+    border-left: 4px solid $success-color;
   }
 }
 
-.border-bottom {
-  border-color: #dee2e6 !important;
-}
-
-.text-primary {
-  color: $primary-color !important;
-}
-
-.bg-primary {
-  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 15%) 100%) !important;
-}
-
-/* Iconos y elementos visuales */
-.fas {
-  font-size: 1.1em;
-}
-
 /* Responsive */
+@media (max-width: 992px) {
+  .card .card-body {
+    padding: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
   .card .card-body {
     padding: 1.5rem;
@@ -134,18 +181,54 @@ $dark-color: #343a40;
   .btn {
     padding: 0.6rem 1rem;
   }
+  
+  .section-title {
+    font-size: 1.1rem;
+  }
 }
 
 @media (max-width: 576px) {
   .card .card-body {
-    padding: 1rem;
+    padding: 1.25rem;
+  }
+  
+  .register-container {
+    padding: 0.5rem;
   }
   
   h2 {
     font-size: 1.5rem;
   }
   
-  h5 {
-    font-size: 1.1rem;
+  .register-icon-container {
+    width: 70px;
+    height: 70px;
+    
+    i {
+      font-size: 1.75rem;
+    }
+  }
+}
+
+// Estilos para validación visual
+.ng-invalid.ng-touched {
+  &.form-control {
+    border-color: $danger-color;
+    
+    &:focus {
+      border-color: $danger-color;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+  }
+}
+
+.ng-valid.ng-touched {
+  &.form-control {
+    border-color: $success-color;
+    
+    &:focus {
+      border-color: $success-color;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
   }
 }

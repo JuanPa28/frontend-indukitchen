@@ -27,7 +27,10 @@ export class RegisterComponent {
   };
 
   errorMessage: string = '';
+  successMessage: string = '';
   isLoading: boolean = false;
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -47,14 +50,24 @@ export class RegisterComponent {
       .subscribe({
         next: (response: any) => {
           this.isLoading = false;
-          alert('Registro exitoso! Ahora puedes iniciar sesión');
-          this.router.navigate(['/login']);
+          this.successMessage = '¡Registro exitoso! Redirigiendo al login...';
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 2000);
         },
         error: (error) => {
           this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Error en el registro';
+          this.errorMessage = error.error?.message || 'Error en el registro. Por favor, intenta nuevamente.';
         }
       });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   private validateForm(): boolean {
@@ -66,8 +79,9 @@ export class RegisterComponent {
     }
 
     // Validar email
-    if (!this.userData.email.includes('@')) {
-      this.errorMessage = 'Email no válido';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.userData.email)) {
+      this.errorMessage = 'Por favor ingresa un email válido';
       return false;
     }
 
@@ -84,14 +98,28 @@ export class RegisterComponent {
     }
 
     // Validar teléfono (solo números, mínimo 10 dígitos)
-    if (!/^\d+$/.test(this.userData.phone) || this.userData.phone.length < 10) {
+    const phoneRegex = /^[0-9]+$/;
+    if (!phoneRegex.test(this.userData.phone) || this.userData.phone.length < 10) {
       this.errorMessage = 'Teléfono no válido (solo números, mínimo 10 dígitos)';
       return false;
     }
 
     // Validar DNI (solo números, 8-12 dígitos)
-    if (!/^\d+$/.test(this.userData.dni) || this.userData.dni.length < 8 || this.userData.dni.length > 12) {
+    const dniRegex = /^[0-9]+$/;
+    if (!dniRegex.test(this.userData.dni) || this.userData.dni.length < 8 || this.userData.dni.length > 12) {
       this.errorMessage = 'DNI no válido (solo números, 8-12 dígitos)';
+      return false;
+    }
+
+    // Validar nombre y apellido (solo letras y espacios)
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    if (!nameRegex.test(this.userData.name)) {
+      this.errorMessage = 'El nombre solo puede contener letras y espacios';
+      return false;
+    }
+
+    if (!nameRegex.test(this.userData.lastName)) {
+      this.errorMessage = 'El apellido solo puede contener letras y espacios';
       return false;
     }
 

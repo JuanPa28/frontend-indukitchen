@@ -20,7 +20,9 @@ export class LoginComponent {
   };
 
   errorMessage: string = '';
+  successMessage: string = '';
   isLoading: boolean = false;
+  showPassword: boolean = false;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -46,8 +48,10 @@ export class LoginComponent {
           this.isLoading = false;
           if (response.token) {
             localStorage.setItem('token', response.token);
-            alert('¡Login exitoso!');
-            this.router.navigate(['/products']);
+            this.successMessage = '¡Login exitoso! Redirigiendo...';
+            setTimeout(() => {
+              this.router.navigate(['/products']);
+            }, 1500);
           } else {
             this.errorMessage = 'No se recibió token del servidor';
           }
@@ -57,5 +61,9 @@ export class LoginComponent {
           this.errorMessage = error.error?.message || 'Error en el login. Verifica tus credenciales.';
         }
       });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }
