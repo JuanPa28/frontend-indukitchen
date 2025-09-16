@@ -1,154 +1,100 @@
-<!-- src/app/components/product-list/product-list.component.html -->
-<div class="product-list-container">
-  <div class="container-fluid py-4">
-    
-    <!-- Header con filtros y título -->
-    <div class="row mb-4">
-      <div class="col-md-6">
-        <h2 class="fw-bold mb-3">Nuestros Productos</h2>
-        <p class="text-muted">Descubre los mejores productos para tu hogar</p>
+<div class="products-wrap">
+  <div class="products-shell">
+
+    <!-- Header -->
+    <header class="products-header">
+      <div class="products-title">
+        <h2>Nuestros Productos</h2>
+        <p class="subtitle">Descubre los mejores productos para tu hogar</p>
       </div>
-      <div class="col-md-6">
-        <div class="d-flex gap-2 justify-content-md-end flex-md-row flex-column">
-          <!-- Filtro de búsqueda -->
-          <div class="search-container position-relative mb-2 mb-md-0">
-            <i class="fas fa-search position-absolute"></i>
-            <input type="text" class="form-control search-input" 
-                   placeholder="Buscar productos..." 
-                   [(ngModel)]="searchTerm"
-                   (input)="applyFilters()">
-          </div>
-          
-          <!-- Filtro de categorías -->
-          <select class="form-select category-filter" 
-                  [(ngModel)]="selectedCategory" 
-                  (change)="applyFilters()">
-            <option value="">Todas las categorías</option>
-            <option *ngFor="let category of categories" [value]="category">
-              {{ getCategoryDisplayName(category) }}
-            </option>
-          </select>
+
+      <div class="products-controls">
+        <div class="search">
+          <label class="visually-hidden" for="product-search">Buscar productos</label>
+          <input id="product-search" type="search"
+                 class="search-input"
+                 placeholder="Buscar productos..."
+                 [(ngModel)]="searchTerm"
+                 (input)="applyFilters()"
+                 aria-label="Buscar productos" />
+          <i class="fas fa-search search-icon" aria-hidden="true"></i>
         </div>
+        <!-- Si más filtros: colócalos aquí sin romper la lógica -->
       </div>
+    </header>
+
+    <!-- Loading -->
+    <div class="center" *ngIf="isLoading">
+      <output class="spinner-border" aria-hidden="true"></output>
+      <p class="muted mt-2">Cargando productos...</p>
     </div>
 
-    <!-- Loading state -->
-    <div class="text-center py-5" *ngIf="isLoading">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
-      </div>
-      <p class="mt-3 text-muted">Cargando productos...</p>
+    <!-- Empty -->
+    <div *ngIf="!isLoading && filteredProducts.length === 0" class="alert info">
+      <i class="fas fa-info-circle"></i>
+      <span>No se encontraron productos que coincidan con tu búsqueda.</span>
     </div>
 
-    <!-- Mensaje de no productos -->
-    <div class="alert alert-info" *ngIf="!isLoading && filteredProducts.length === 0">
-      <i class="fas fa-info-circle me-2"></i>
-      No se encontraron productos que coincidan con tu búsqueda.
-    </div>
+    <!-- Grid -->
+    <section *ngIf="!isLoading && filteredProducts.length > 0" class="product-grid" aria-live="polite">
+      <article class="product-card" *ngFor="let product of paginatedProducts">
+        <div class="media">
+          <div class="image-wrap">
+            <img [src]="product.imagen" [alt]="product.nombre" (error)="handleImageError($event)" />
+          </div>
+          <span class="stock-badge"
+                [ngClass]="{
+                  'stock-high': product.existencia > 10,
+                  'stock-medium': product.existencia > 0 && product.existencia <= 10,
+                  'stock-out': product.existencia === 0
+                }" aria-hidden="true">
+            {{ product.existencia > 0 ? (product.existencia + (product.existencia === 1 ? ' en stock' : ' en stock')) : 'Agotado' }}
+          </span>
+        </div>
 
-    <!-- Grid de productos -->
-    <div class="row g-4" *ngIf="!isLoading && filteredProducts.length > 0">
-      <div class="col-xl-3 col-lg-4 col-md-6" *ngFor="let product of paginatedProducts">
-        <div class="product-card card h-100 border-0 shadow-sm">
-          
-          <!-- Imagen del producto -->
-          <div class="product-image-container position-relative">
-            <img [src]="product.imageUrl" 
-                 [alt]="product.name"
-                 class="product-image"
-                 (error)="handleImageError($event)">
-            
-            <!-- Badge de estado -->
-            <span class="position-absolute top-0 end-0 m-2 badge" 
-                  [ngClass]="{
-                    'bg-success': product.stock > 10,
-                    'bg-warning': product.stock > 0 && product.stock <= 10,
-                    'bg-danger': product.stock === 0
-                  }">
-              {{ product.stock > 0 ? (product.stock + ' en stock') : 'Agotado' }}
-            </span>
+        <div class="body">
+          <h3 class="name" title="{{ product.nombre }}">{{ product.nombre }}</h3>
+          <p class="desc" title="{{ product.descripcion }}">{{ truncateText(product.descripcion, 100) }}</p>
+
+          <div class="meta">
+            <div class="price">{{ product.precio | currency:'COP ':'symbol':'1.0-0' }}</div>
+            <div class="weight"><i class="fas fa-weight-hanging" aria-hidden="true"></i> {{ product.peso }} kg</div>
           </div>
 
-          <!-- Contenido de la tarjeta -->
-          <div class="card-body d-flex flex-column">
-            <!-- Categoría -->
-            <div class="mb-2">
-              <span class="badge bg-light text-dark">{{ getCategoryDisplayName(product.category) }}</span>
-            </div>
-            
-            <!-- Nombre del producto -->
-            <h5 class="card-title product-title">{{ product.name }}</h5>
-            
-            <!-- Descripción -->
-            <p class="card-text text-muted small flex-grow-1">
-              {{ truncateText(product.description, 100) }}
-            </p>
-            
-            <!-- Precio y rating -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <span class="h5 fw-bold text-primary mb-0">
-                  {{ product.price | currency:'COP':'symbol':'1.0-0' }}
-                </span>
-              </div>
-              <div *ngIf="product.rating" class="d-flex align-items-center">
-                <i class="fas fa-star text-warning me-1"></i>
-                <small class="text-muted">{{ product.rating }}</small>
-              </div>
-            </div>
+          <div class="actions">
+            <button class="btn btn-primary"
+                    (click)="addToCart(product)"
+                    [disabled]="product.existencia === 0"
+                    aria-label="Agregar {{product.nombre}} al carrito">
+              <i class="fas fa-shopping-cart"></i>
+              <span>{{ product.existencia > 0 ? 'Agregar al carrito' : 'Agotado' }}</span>
+            </button>
 
-            <!-- Acciones - CORREGIDO -->
-            <div class="card-actions">
-              <div class="action-buttons">
-                <button class="action-btn primary" 
-                        (click)="addToCart(product)"
-                        [disabled]="product.stock === 0">
-                  <span class="btn-content">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="btn-text">
-                      {{ product.stock > 0 ? 'Agregar al carrito' : 'Agotado' }}
-                    </span>
-                  </span>
-                </button>
-                
-                <button class="action-btn secondary" 
-                        (click)="viewDetails(product)">
-                  <span class="btn-content">
-                    <i class="fas fa-eye"></i>
-                    <span class="btn-text">Ver detalles</span>
-                  </span>
-                </button>
-              </div>
-            </div>
+            <button class="btn btn-ghost" (click)="viewDetails(product)" aria-label="Ver detalles de {{product.nombre}}">
+              <i class="fas fa-eye"></i>
+              <span>Ver detalles</span>
+            </button>
           </div>
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
 
-    <!-- Paginación -->
-    <div class="row mt-5" *ngIf="!isLoading && filteredProducts.length > 0 && totalPages > 1">
-      <div class="col-12">
-        <nav aria-label="Product pagination">
-          <ul class="pagination justify-content-center">
-            <li class="page-item" [class.disabled]="currentPage === 1">
-              <a class="page-link" (click)="changePage(currentPage - 1)">
-                <i class="fas fa-chevron-left"></i>
-              </a>
-            </li>
-            
-            <li class="page-item" *ngFor="let page of getPages()" 
-                [class.active]="page === currentPage">
-              <a class="page-link" (click)="changePage(page)">{{ page }}</a>
-            </li>
-            
-            <li class="page-item" [class.disabled]="currentPage === totalPages">
-              <a class="page-link" (click)="changePage(currentPage + 1)">
-                <i class="fas fa-chevron-right"></i>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </div>
+    <!-- Pagination -->
+    <nav *ngIf="!isLoading && filteredProducts.length > 0 && totalPages > 1" class="pagination-wrap" aria-label="Paginación de productos">
+      <ul class="pagination">
+        <li class="page" [class.disabled]="currentPage === 1">
+          <a (click)="changePage(currentPage - 1)" aria-label="Página anterior"><i class="fas fa-chevron-left"></i></a>
+        </li>
+
+        <li class="page" *ngFor="let page of getPages()" [class.active]="page === currentPage">
+          <a (click)="changePage(page)">{{ page }}</a>
+        </li>
+
+        <li class="page" [class.disabled]="currentPage === totalPages">
+          <a (click)="changePage(currentPage + 1)" aria-label="Página siguiente"><i class="fas fa-chevron-right"></i></a>
+        </li>
+      </ul>
+    </nav>
+
   </div>
 </div>

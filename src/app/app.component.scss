@@ -1,17 +1,149 @@
-// src/styles.scss
-/* Importar Bootstrap */
-@import 'bootstrap/dist/css/bootstrap.min.css';
+/* NAVBAR MODERNIZADO - pega al final de styles.scss */
 
-/* Estilos globales simples */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  padding: 0;
-  margin: 0;
+/* Variables */
+$nav-bg: #ffffff;
+$nav-accent: #F54927;
+$nav-text: #0f1724;
+$nav-muted: #6b7280;
+$nav-shadow: rgba(15, 23, 42, 0.06);
+
+/* Topbar */
+.topbar {
+  background: linear-gradient(90deg, rgba(255,255,255,0.98), rgba(255,255,255,0.99));
+  border-radius: 12px;
+  padding: .5rem 0;
+  margin: .75rem 0;
+  box-shadow: 0 10px 30px $nav-shadow;
+  transition: transform .12s ease, box-shadow .12s ease;
+
+  .container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    text-decoration: none;
+    color: $nav-text;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: .25rem .5rem;
+    border-radius: 8px;
+
+    &:hover { text-decoration: none; transform: translateY(-1px); }
+
+    .brand-icon {
+      display: inline-flex;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, $nav-accent, darken($nav-accent, 8%));
+      color: white;
+      align-items: center;
+      justify-content: center;
+      font-size: .95rem;
+      box-shadow: 0 6px 18px rgba($nav-accent, 0.12);
+    }
+
+    .brand-text { color: $nav-text; }
+  }
+
+  .navbar-toggler {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    padding: .35rem;
+    margin-left: auto;
+  }
+
+  .navbar-toggler-icon {
+    width: 28px;
+    height: 18px;
+    background-image: none;
+    position: relative;
+
+    &::before, &::after, span {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: rgba(16,24,40,0.6);
+      border-radius: 2px;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+
+    &::before { top: 0; }
+    span { top: 8px; }
+    &::after { bottom: 0; }
+  }
+
+  .navbar-collapse {
+    flex-basis: auto;
+  }
+
+  .navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+
+    .nav-link {
+      color: $nav-muted;
+      padding: .45rem .7rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: background .12s ease, color .12s ease, transform .12s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+
+      &:hover {
+        background: rgba(16,24,40,0.03);
+        color: $nav-text;
+        transform: translateY(-2px);
+        text-decoration: none;
+      }
+
+      &.active {
+        background: rgba($nav-accent, 0.12);
+        color: $nav-accent !important;
+        box-shadow: 0 6px 18px rgba($nav-accent, .08);
+      }
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(16,24,40,0.06);
+      color: $nav-text;
+      padding: .45rem .8rem;
+      border-radius: 8px;
+      font-weight: 700;
+
+      i { opacity: .9; }
+
+      &:hover {
+        background: rgba(16,24,40,0.04);
+        transform: translateY(-2px);
+      }
+    }
+  }
 }
 
-.container {
+/* Ajustes globales para contenedor principal */
+.app-main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 15px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 991px) {
+  .topbar {
+    padding: .4rem;
+    margin: .5rem 0;
+  }
+
+  .brand-text { display: none; } /* ocultar texto de brand en pantallas pequeñas para ahorrar espacio */
 }

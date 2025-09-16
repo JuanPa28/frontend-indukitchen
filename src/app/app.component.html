@@ -1,22 +1,50 @@
-<!-- src/app/app.component.html -->
-<div class="container-fluid">
-  <!-- Header simple -->
-  <nav class="navbar navbar-dark bg-primary">
+<div class="app-root">
+
+  <!-- Navbar: sólo visible cuando isLoggedIn() es true (igual que antes) -->
+  <nav class="topbar navbar navbar-expand-lg" *ngIf="isLoggedIn()">
     <div class="container">
-      <a class="navbar-brand" routerLink="/">
-        🍳 InduKitchen
+      <a class="brand" routerLink="/">
+        <span class="brand-icon" aria-hidden="true">🍳</span>
+        <span class="brand-text">InduKitchen</span>
       </a>
-      <div class="navbar-nav flex-row">
-        <a class="nav-link mx-2 text-white" routerLink="/products">Productos</a>
-        <a class="nav-link mx-2 text-white" routerLink="/cart">Carrito</a>
-        <a class="nav-link mx-2 text-white" routerLink="/login">Login</a>
-        <a class="nav-link mx-2 text-white" routerLink="/register">Registro</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/products" routerLinkActive="active">Productos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/cart" routerLinkActive="active">
+              <i class="fas fa-shopping-cart me-1"></i> Carrito
+            </a>
+          </li>
+
+          <!-- Links de sesión (mantengo los mismos links que tenías) -->
+          <li class="nav-item d-lg-inline d-none">
+            <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+          </li>
+          <li class="nav-item d-lg-inline d-none">
+            <a class="nav-link" routerLink="/register" routerLinkActive="active">Registro</a>
+          </li>
+
+          <li class="nav-item ms-2">
+            <button class="btn btn-ghost" (click)="logout()">
+              <i class="fas fa-sign-out-alt me-1"></i>
+              Cerrar sesión
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Contenido principal -->
-  <main class="container mt-4">
+  <!-- Main content (router) -->
+  <main class="app-main container mt-4">
     <router-outlet></router-outlet>
   </main>
 </div>

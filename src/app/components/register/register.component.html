@@ -1,180 +1,164 @@
-<!-- src/app/components/register/register.component.html -->
-<div class="register-container">
-  <div class="container py-4">
-    <div class="row justify-content-center">
-      <div class="col-xl-8 col-lg-10">
-        <!-- Header con icono -->
-        <div class="text-center mb-4">
-          <div class="register-icon-container mb-3">
-            <i class="fas fa-user-plus"></i>
-          </div>
-          <h2 class="fw-bold">Crear Cuenta</h2>
-          <p class="text-muted">Únete a InduKitchen y descubre los mejores productos</p>
+<div class="register-wrap">
+  <div class="register-shell">
+    <header class="register-header text-center">
+      <div class="avatar">
+        <i class="fas fa-user-plus" aria-hidden="true"></i>
+      </div>
+      <h1 class="title">Crear Cuenta</h1>
+      <p class="subtitle">Únete a <strong>InduKitchen</strong> y descubre los mejores productos</p>
+    </header>
+
+    <main class="card">
+      <form (ngSubmit)="onSubmit()" class="register-form" novalidate>
+        <!-- Mensaje success -->
+        <div class="form-alert success" *ngIf="successMessage" role="alert">
+          <i class="fas fa-check-circle"></i>
+          <span>{{ successMessage }}</span>
         </div>
 
-        <!-- Tarjeta del formulario -->
-        <div class="card">
-          <div class="card-body">
-            <form (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
-              
-              <!-- Mensaje de éxito -->
-              <div class="alert alert-success mt-3" *ngIf="successMessage" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                {{ successMessage }}
-              </div>
-              
-              <!-- Sección: Información Personal -->
-              <h5 class="section-title mb-4">
-                <i class="fas fa-user me-2"></i>Información Personal
-              </h5>
-              
-              <div class="row">
-                <div class="col-md-6 mb-4">
-                  <label class="form-label fw-semibold">Nombre *</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input type="text" class="form-control" 
-                           [(ngModel)]="userData.name" name="name" 
-                           placeholder="Ej: Juan" required>
-                  </div>
-                  <div class="form-text">Tu nombre de pila</div>
-                </div>
-                
-                <div class="col-md-6 mb-4">
-                  <label class="form-label fw-semibold">Apellido *</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    <input type="text" class="form-control" 
-                           [(ngModel)]="userData.lastName" name="lastName" 
-                           placeholder="Ej: Pérez" required>
-                  </div>
-                  <div class="form-text">Tu apellido completo</div>
-                </div>
-              </div>
+        <!-- Sección: Información Personal -->
+        <section class="section">
+          <div class="section-header">
+            <i class="fas fa-user"></i>
+            <h2>Información Personal</h2>
+          </div>
 
-              <!-- Sección: Contacto -->
-              <h5 class="section-title mb-4 mt-4">
-                <i class="fas fa-envelope me-2"></i>Información de Contacto
-              </h5>
-              
-              <div class="row">
-                <div class="col-md-6 mb-4">
-                  <label class="form-label fw-semibold">Email *</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                    <input type="email" class="form-control" 
-                           [(ngModel)]="userData.email" name="email" 
-                           placeholder="ejemplo@correo.com" required>
-                  </div>
-                  <div class="form-text">Será tu usuario para ingresar</div>
-                </div>
-                
-                <div class="col-md-6 mb-4">
-                  <label class="form-label fw-semibold">Teléfono *</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                    <input type="tel" class="form-control" 
-                           [(ngModel)]="userData.phone" name="phone" 
-                           placeholder="300 1234567" required>
-                  </div>
-                  <div class="form-text">Número de contacto</div>
-                </div>
+          <div class="row">
+            <div class="col">
+              <label class="label">Nombre *</label>
+              <div class="form-field">
+                <i class="field-icon fas fa-user" aria-hidden="true"></i>
+                <input type="text" class="field-input" [(ngModel)]="userData.name" name="name"
+                       placeholder="Ej: Juan" required aria-required="true" />
               </div>
+            </div>
 
-              <!-- Sección: Identificación -->
-              <h5 class="section-title mb-4 mt-4">
-                <i class="fas fa-id-card me-2"></i>Datos de Identificación
-              </h5>
-              
-              <div class="row">
-                <div class="col-md-6 mb-4">
-                  <label class="form-label fw-semibold">DNI/Cédula *</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                    <input type="text" class="form-control" 
-                           [(ngModel)]="userData.dni" name="dni" 
-                           placeholder="123456789" required>
-                  </div>
-                  <div class="form-text">Número de documento</div>
-                </div>
-                
-                <div class="col-md-6 mb-4">
-                  <label class="form-label fw-semibold">Dirección *</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-home"></i></span>
-                    <input type="text" class="form-control" 
-                           [(ngModel)]="userData.address" name="address" 
-                           placeholder="Calle 123 # 45-67" required>
-                  </div>
-                  <div class="form-text">Dirección de entrega</div>
-                </div>
+            <div class="col">
+              <label class="label">Apellido *</label>
+              <div class="form-field">
+                <i class="field-icon fas fa-user" aria-hidden="true"></i>
+                <input type="text" class="field-input" [(ngModel)]="userData.lastName" name="lastName"
+                       placeholder="Ej: Pérez" required aria-required="true" />
               </div>
-
-              <!-- Sección: Seguridad -->
-              <h5 class="section-title mb-4 mt-4">
-                <i class="fas fa-lock me-2"></i>Seguridad
-              </h5>
-              
-              <div class="row">
-                <div class="col-md-6 mb-4">
-                  <label class="form-label fw-semibold">Contraseña *</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input [type]="showPassword ? 'text' : 'password'" class="form-control" 
-                           [(ngModel)]="userData.password" name="password" 
-                           placeholder="Mínimo 6 caracteres" required>
-                    <button class="btn password-toggle" type="button" (click)="togglePasswordVisibility()">
-                      <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
-                    </button>
-                  </div>
-                  <div class="form-text">Mínimo 6 caracteres</div>
-                </div>
-                
-                <div class="col-md-6 mb-4">
-                  <label class="form-label fw-semibold">Confirmar Contraseña *</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                    <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control" 
-                           [(ngModel)]="userData.confirmPassword" name="confirmPassword" 
-                           placeholder="Repite tu contraseña" required>
-                    <button class="btn password-toggle" type="button" (click)="toggleConfirmPasswordVisibility()">
-                      <i class="fas" [class.fa-eye]="!showConfirmPassword" [class.fa-eye-slash]="showConfirmPassword"></i>
-                    </button>
-                  </div>
-                  <div class="form-text">Debe coincidir con la anterior</div>
-                </div>
-              </div>
-
-              <!-- Mensaje de error -->
-              <div class="alert alert-danger mt-3" *ngIf="errorMessage" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                {{ errorMessage }}
-              </div>
-
-              <!-- Botón de enviar -->
-              <div class="d-grid mt-4">
-                <button type="submit" class="btn btn-primary" [disabled]="isLoading">
-                  <span *ngIf="!isLoading">
-                    <i class="fas fa-user-plus me-2"></i>Crear Mi Cuenta
-                  </span>
-                  <span *ngIf="isLoading">
-                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Creando cuenta...
-                  </span>
-                </button>
-              </div>
-            </form>
-
-            <!-- Enlace a login -->
-            <div class="text-center pt-4 mt-4 border-top">
-              <p class="text-muted mb-2">¿Ya tienes cuenta?</p>
-              <a routerLink="/login" class="btn btn-outline-primary">
-                <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-              </a>
             </div>
           </div>
+        </section>
+
+        <!-- Sección: Información de Contacto -->
+        <section class="section">
+          <div class="section-header">
+            <i class="fas fa-envelope"></i>
+            <h2>Información de Contacto</h2>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label class="label">Email *</label>
+              <div class="form-field">
+                <i class="field-icon fas fa-envelope" aria-hidden="true"></i>
+                <input type="email" class="field-input" [(ngModel)]="userData.email" name="email"
+                       placeholder="ejemplo@correo.com" required aria-required="true" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label class="label">Teléfono *</label>
+              <div class="form-field">
+                <i class="field-icon fas fa-phone" aria-hidden="true"></i>
+                <input type="tel" class="field-input" [(ngModel)]="userData.phone" name="phone"
+                       placeholder="300 1234567" required aria-required="true" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección: Datos de Identificación -->
+        <section class="section">
+          <div class="section-header">
+            <i class="fas fa-id-card"></i>
+            <h2>Datos de Identificación</h2>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label class="label">DNI/Cédula *</label>
+              <div class="form-field">
+                <i class="field-icon fas fa-id-card" aria-hidden="true"></i>
+                <input type="text" class="field-input" [(ngModel)]="userData.dni" name="dni"
+                       placeholder="123456789" required aria-required="true" />
+              </div>
+            </div>
+
+            <div class="col">
+              <label class="label">Dirección *</label>
+              <div class="form-field">
+                <i class="field-icon fas fa-home" aria-hidden="true"></i>
+                <input type="text" class="field-input" [(ngModel)]="userData.address" name="address"
+                       placeholder="Calle 123 # 45-67" required aria-required="true" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sección: Seguridad -->
+        <section class="section">
+          <div class="section-header">
+            <i class="fas fa-lock"></i>
+            <h2>Seguridad</h2>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label class="label">Contraseña *</label>
+              <div class="form-field has-toggle">
+                <i class="field-icon fas fa-lock" aria-hidden="true"></i>
+                <input [type]="showPassword ? 'text' : 'password'" class="field-input"
+                       [(ngModel)]="userData.password" name="password" placeholder="Mínimo 6 caracteres" required aria-required="true" />
+                <button type="button" class="toggle-btn" (click)="togglePasswordVisibility()" aria-label="Mostrar contraseña">
+                  <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="col">
+              <label class="label">Confirmar Contraseña *</label>
+              <div class="form-field has-toggle">
+                <i class="field-icon fas fa-lock" aria-hidden="true"></i>
+                <input [type]="showConfirmPassword ? 'text' : 'password'" class="field-input"
+                       [(ngModel)]="userData.confirmPassword" name="confirmPassword" placeholder="Repite tu contraseña" required aria-required="true" />
+                <button type="button" class="toggle-btn" (click)="toggleConfirmPasswordVisibility()" aria-label="Mostrar confirmar contraseña">
+                  <i class="fas" [class.fa-eye]="!showConfirmPassword" [class.fa-eye-slash]="showConfirmPassword"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mensaje de error -->
+        <div class="form-alert error" *ngIf="errorMessage" role="alert">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>{{ errorMessage }}</span>
         </div>
-      </div>
-    </div>
+
+        <!-- CTA -->
+        <div class="form-actions">
+          <button type="submit" class="btn primary" [disabled]="isLoading">
+            <ng-container *ngIf="!isLoading">
+              <i class="fas fa-user-plus"></i> Crear Mi Cuenta
+            </ng-container>
+            <ng-container *ngIf="isLoading">
+              <span class="spinner"></span> Creando cuenta...
+            </ng-container>
+          </button>
+        </div>
+      </form>
+
+      <footer class="card-footer text-center">
+        <p class="small muted">¿Ya tienes cuenta?</p>
+        <a routerLink="/login" class="btn ghost">
+          <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+        </a>
+      </footer>
+    </main>
   </div>
 </div>

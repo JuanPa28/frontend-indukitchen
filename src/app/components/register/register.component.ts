@@ -1,10 +1,11 @@
 // src/app/components/register/register.component.ts
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
+
 
 @Component({
   selector: 'app-register',
@@ -32,7 +33,8 @@ export class RegisterComponent {
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
-  constructor(private router: Router, private http: HttpClient) {}
+  private router = inject(Router);
+  private auth = inject(Auth);
 
   onSubmit(): void {
     // Validaciones simples con if
@@ -43,23 +45,21 @@ export class RegisterComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // Preparar datos para enviar al backend (sin confirmPassword)
-    const { confirmPassword, ...userToSend } = this.userData;
-
-    this.http.post('http://localhost:3000/api/auth/register', userToSend)
-      .subscribe({
-        next: (response: any) => {
-          this.isLoading = false;
-          this.successMessage = '¡Registro exitoso! Redirigiendo al login...';
-          setTimeout(() => {
-            this.router.navigate(['/login']);
-          }, 2000);
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Error en el registro. Por favor, intenta nuevamente.';
-        }
-      });
+    // Registrar usuario en Firebase Auth
+    createUserWithEmailAndPassword(
+      this.auth,
+      this.userData.email,
+      this.userData.password
+    ).then((userCredential) => {
+      this.isLoading = false;
+      this.successMessage = '¡Registro exitoso! Redirigiendo al login...';
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 2000);
+    }).catch((error) => {
+      this.isLoading = false;
+      this.errorMessage = error.message || 'Error en el registro. Por favor, intenta nuevamente.';
+    });
   }
 
   togglePasswordVisibility(): void {
