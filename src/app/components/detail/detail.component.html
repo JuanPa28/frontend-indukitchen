@@ -1,0 +1,27 @@
+<div class="detalle d-flex align-items-center justify-content-between border p-2 rounded">
+  <div class="d-flex align-items-center">
+    <img [src]="detalle.producto?.imagen" alt="{{ detalle.producto?.nombre }}" class="img-thumbnail me-3"
+      style="width: 80px; height: 80px; object-fit: cover;" (error)="handleImageError($event)" />
+
+
+    <div>
+      <h5>{{ detalle.producto?.nombre }}</h5>
+      <p class="mb-0">{{ detalle.producto?.descripcion }}</p>
+      <span class="text-muted">{{ detalle.producto?.precio | currency:'USD':'symbol' }}</span>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-center">
+    <button class="btn btn-outline-secondary btn-sm" (click)="decrease()">-</button>
+    <span class="mx-2">{{ detalle.cantidad }}</span>
+    <button class="btn btn-outline-secondary btn-sm" (click)="increase()">+</button>
+  </div>
+
+  <div class="text-end">
+    <strong>{{ (detalle.producto?.precio || 0) * detalle.cantidad | currency:'USD':'symbol' }}</strong>
+  </div>
+
+  <div>
+    <button class="btn btn-outline-danger btn-sm" (click)="remove()">🗑</button>
+  </div>
+</div>

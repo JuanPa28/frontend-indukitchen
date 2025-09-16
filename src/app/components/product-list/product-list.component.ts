@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductoDto } from '../../services/product/product.dto';
 import { ProductoService } from '../../services/product/product.service';
+import { DetailDto } from '../../services/detail/detail.dto';
+import { CarritoService } from '../../services/cart/cart.service';
 
 @Component({
   selector: 'app-product-list',
@@ -26,7 +28,8 @@ export class ProductListComponent implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
 
-  constructor(private readonly productoService: ProductoService) {}
+  constructor(private readonly productoService: ProductoService,
+  private readonly carritoService: CarritoService) { }
 
   ngOnInit(): void {
     this.loadProducts();
@@ -108,13 +111,41 @@ export class ProductListComponent implements OnInit {
   }
 
   addToCart(product: ProductoDto): void {
-    console.log('Producto agregado al carrito:', product);
-    alert(`¡${product.nombre} agregado al carrito!`);
+    const detalle: DetailDto = {
+      idProducto: product.id,
+      cantidad: 1,
+      producto: product
+    };
+
+    // Aquí necesitarías el idCarrito (lo puedes manejar en localStorage o crear uno nuevo si no existe)
+    const carritoId = localStorage.getItem('carritoId');
+
+    if (carritoId) {
+      this.carritoService.addDetalle(carritoId, detalle).subscribe({
+        next: (carrito) => {
+          console.log('Carrito actualizado:', carrito);
+          alert(`¡${product.nombre} agregado al carrito!`);
+        },
+        error: (err) => console.error('Error al agregar al carrito', err)
+      });
+    } else {
+      // crear carrito nuevo
+      const nuevoCarrito = { detalles: [detalle] };
+      this.carritoService.create(nuevoCarrito).subscribe({
+        next: (carrito) => {
+          localStorage.setItem('carritoId', carrito.id!);
+          console.log('Carrito creado:', carrito);
+          alert(`¡${product.nombre} agregado al carrito!`);
+        },
+        error: (err) => console.error('Error al crear carrito', err)
+      });
+    }
   }
 
-  viewDetails(product: ProductoDto): void {
-    console.log('Ver detalles del producto:', product);
-    alert(`Redirigiendo a detalles de: ${product.nombre}`);
+    viewDetails(product: ProductoDto): void {
+      console.log('Ver detalles del producto:', product);
+      alert(`Redirigiendo a detalles de: ${product.nombre
+    }`);
   }
 
   handleImageError(event: any): void {
