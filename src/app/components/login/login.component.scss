@@ -1,176 +1,252 @@
-// src/app/components/login/login.component.scss
+// Paleta (coincide con register para consistencia)
+$bg-1: #fbfdff;
+$bg-2: #f1f5f8;
+$primary: #F54927;
+$primary-600: #d13a1a;
+$muted: #6b7280;
+$card: #ffffff;
+$soft: #f7f9fb;
+$danger: #dc3545;
+$success: #28a745;
 
-// Variables locales con la nueva paleta de colores
-$primary-color: #F54927;
-$primary-dark: #d13a1a;
-$primary-light: rgba(245, 73, 39, 0.15);
-$secondary-color: #2C3E50;
-$success-color: #28a745;
-$danger-color: #dc3545;
-$warning-color: #ffc107;
-$info-color: #17a2b8;
-$light-color: #f8f9fa;
-$dark-color: #343a40;
-$text-muted: #6c757d;
+// Tipografía base
+:host {
+  font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #222;
+}
 
-// Estilos del componente
-.login-container {
+/* Layout general */
+.login-wrap {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   display: flex;
   align-items: center;
-  padding: 1rem;
-}
-
-.login-icon-container {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
-  
-  i {
-    color: white;
-    font-size: 2rem;
+  background: linear-gradient(180deg, $bg-1 0%, $bg-2 100%);
+  padding: 2.2rem;
+}
+
+.login-shell {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Header */
+.login-header {
+  text-align: center;
+  margin-bottom: 1rem;
+
+  .avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, $primary, $primary-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 6px 18px rgba(20,20,20,0.06);
+
+    i { color: #fff; font-size: 1.2rem; }
+  }
+
+  .title {
+    font-size: 1.25rem;
+    margin: .5rem 0 0;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .subtitle {
+    margin: .2rem 0 0;
+    color: $muted;
+    font-size: .95rem;
   }
 }
 
+/* Card */
 .card {
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  
-  .card-body {
-    padding: 2.5rem;
+  background: $card;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(31,41,55,0.06);
+  border: 1px solid rgba(16,24,40,0.03);
+  overflow: hidden;
+}
+
+/* Field group */
+.field-group {
+  margin-bottom: 0.85rem;
+
+  .label {
+    display: block;
+    font-size: .88rem;
+    color: #2b3440;
+    margin-bottom: .4rem;
+    font-weight: 600;
+  }
+
+  .help {
+    font-size: .82rem;
+    color: $muted;
+    margin-top: .35rem;
   }
 }
 
-.form-control {
-  border: 2px solid #e9ecef;
+/* Reuse form-field pattern from register */
+.form-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: $soft;
   border-radius: 10px;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  
-  &:focus {
-    border-color: $primary-color;
-    box-shadow: 0 0 0 0.2rem rgba(245, 73, 39, 0.25);
+  padding: 0.35rem 0.6rem;
+  border: 1px solid rgba(16,24,40,0.04);
+  transition: box-shadow .14s ease, border-color .14s ease;
+
+  &:focus-within {
+    box-shadow: 0 8px 20px rgba($primary, 0.08);
+    border-color: rgba($primary, 0.18);
   }
-  
-  &::placeholder {
-    color: $text-muted;
-    opacity: 0.7;
+
+  .field-icon {
+    margin: 0 .5rem 0 .35rem;
+    color: $muted;
+    width: 18px;
+    text-align: center;
+    flex: 0 0 18px;
+    font-size: .95rem;
+  }
+
+  .field-input {
+    background: transparent;
+    border: none;
+    padding: 0.6rem 0.45rem;
+    font-size: .95rem;
+    outline: none;
+    width: 100%;
+    color: #111827;
+
+    &::placeholder { color: rgba(40,40,40,0.35); }
+  }
+
+  &.has-toggle {
+    padding-right: 2.75rem;
+
+    .toggle-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: $muted;
+      font-size: .95rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: .25rem;
+      border-radius: 6px;
+
+      &:hover { color: $primary; }
+    }
   }
 }
 
-.input-group-text {
-  background-color: white;
-  border: 2px solid #e9ecef;
-  border-right: none;
-  border-radius: 10px 0 0 10px;
-}
-
-.password-toggle {
-  background-color: white;
-  border: 2px solid #e9ecef;
-  border-left: none;
-  border-radius: 0 10px 10px 0;
-  color: $text-muted;
-  
-  &:hover {
-    color: $primary-color;
-  }
-}
-
-.form-label {
-  font-weight: 600;
-  color: $secondary-color;
-  margin-bottom: 0.5rem;
-}
-
-.form-text {
-  font-size: 0.875rem;
-  color: $text-muted;
-  margin-top: 0.25rem;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
-  border: none;
+/* Alerts */
+.form-alert {
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  padding: .6rem .85rem;
   border-radius: 10px;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(245, 73, 39, 0.3);
-    background: linear-gradient(135deg, $primary-dark 0%, #b52d10 100%);
+  margin: .6rem 0 1rem;
+  font-size: .95rem;
+  color: #0f172a;
+
+  i { font-size: 1rem; }
+
+  &.success {
+    background: rgba($success, 0.09);
+    border: 1px solid rgba($success, 0.12);
+    color: #0b5132;
   }
-  
-  &:disabled {
-    background: $text-muted;
-    transform: none;
-    box-shadow: none;
+
+  &.error {
+    background: rgba($danger, 0.08);
+    border: 1px solid rgba($danger, 0.12);
+    color: #63171b;
   }
 }
 
-.btn-outline-primary {
-  border: 2px solid $primary-color;
-  color: $primary-color;
-  border-radius: 10px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background-color: $primary-color;
-    color: white;
-    transform: translateY(-1px);
+/* Actions */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.7rem;
+  margin-bottom: 0.6rem;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    border-radius: 10px;
+    padding: .85rem 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-size: .98rem;
+  }
+
+  .primary {
+    background: linear-gradient(135deg, $primary, $primary-600);
+    color: #fff;
+    box-shadow: 0 8px 22px rgba($primary, 0.12);
+    transition: transform .14s ease, box-shadow .14s ease;
+
+    &:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba($primary, 0.16); }
+    &:disabled { opacity: .7; cursor: not-allowed; transform: none; box-shadow: none; }
+  }
+
+  .ghost {
+    background: transparent;
+    border: 1px solid rgba(16,24,40,0.06);
+    color: $primary;
+    padding: .55rem .95rem;
+    font-weight: 600;
+    border-radius: 8px;
   }
 }
 
-.alert {
-  border-radius: 10px;
-  border: none;
-  padding: 1rem 1.5rem;
-  
-  &.alert-danger {
-    background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
-    color: #721c24;
-    border-left: 4px solid $danger-color;
-  }
-  
-  &.alert-success {
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    color: #155724;
-    border-left: 4px solid $success-color;
-  }
+/* Footer extras */
+.card-footer {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  align-items: center;
+
+  .muted { color: $muted; font-size: .9rem; }
+  .extra .faded { color: rgba(40,40,40,0.55); text-decoration: none; font-size: .88rem; margin-top: .25rem; }
 }
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: rgba(255,255,255,0.95);
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .card .card-body {
-    padding: 1.5rem;
-  }
-  
-  .form-control {
-    font-size: 0.9rem;
-    padding: 0.6rem 0.8rem;
-  }
-  
-  .btn {
-    padding: 0.6rem 1rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .card .card-body {
-    padding: 1.25rem;
-  }
-  
-  .login-container {
-    padding: 0.5rem;
-  }
+@media (max-width: 480px) {
+  .login-shell { padding: 0 0.8rem; }
+  .avatar { width: 64px; height: 64px; }
+  .card { padding: .85rem; }
 }

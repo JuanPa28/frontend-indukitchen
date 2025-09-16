@@ -1,10 +1,9 @@
 // src/app/components/login/login.component.ts
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +23,8 @@ export class LoginComponent {
   isLoading: boolean = false;
   showPassword: boolean = false;
 
-  constructor(private router: Router, private http: HttpClient) {}
+  private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
 
   onSubmit(): void {
     // Validaciones simples con if
@@ -41,26 +41,21 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // Enviar datos al backend
-    this.http.post('http://localhost:3000/api/auth/login', this.loginData)
-      .subscribe({
-        next: (response: any) => {
-          this.isLoading = false;
-          if (response.token) {
-            localStorage.setItem('token', response.token);
-            this.successMessage = '¡Login exitoso! Redirigiendo...';
-            setTimeout(() => {
-              this.router.navigate(['/products']);
-            }, 1500);
-          } else {
-            this.errorMessage = 'No se recibió token del servidor';
-          }
-        },
-        error: (error) => {
-          this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Error en el login. Verifica tus credenciales.';
-        }
-      });
+    // Login con Firebase Auth
+    signInWithEmailAndPassword(
+      this.auth,
+      this.loginData.email,
+      this.loginData.password
+    ).then((userCredential: unknown) => {
+      this.isLoading = false;
+      this.successMessage = '¡Login exitoso! Redirigiendo...';
+      setTimeout(() => {
+        this.router.navigate(['/products']);
+      }, 1500);
+    }).catch((error: any) => {
+      this.isLoading = false;
+      this.errorMessage = error.message || 'Error en el login. Verifica tus credenciales.';
+    });
   }
 
   togglePasswordVisibility(): void {
