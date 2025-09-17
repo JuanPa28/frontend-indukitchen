@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductoDto } from '../../services/product/product.dto';
 import { ProductoService } from '../../services/product/product.service';
 import { LocalCartService } from '../../services/cart/local-cart.service';
+import { HelloService } from '../../services/hello/hello.service';
 import { AiChatComponent } from '../ai-chat/ai-chat.component';
 
 @Component({
@@ -28,11 +29,32 @@ export class ProductListComponent implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
 
+  // Saludo personalizado con IA
+  greetingMessage: string = '';
+  isLoadingGreeting: boolean = true;
+
   constructor(private readonly productoService: ProductoService,
-  private readonly localCartService: LocalCartService) { }
+              private readonly localCartService: LocalCartService,
+              private readonly helloService: HelloService) { }
 
   ngOnInit(): void {
+    this.loadGreeting();
     this.loadProducts();
+  }
+
+  loadGreeting(): void {
+    this.isLoadingGreeting = true;
+    this.helloService.getPersonalizedGreeting().subscribe({
+      next: (greeting) => {
+        this.greetingMessage = greeting;
+        this.isLoadingGreeting = false;
+      },
+      error: (error) => {
+        console.error('Error cargando saludo:', error);
+        this.greetingMessage = '¡Bienvenido a IndukItchen! Descubre nuestros mejores productos para tu hogar.';
+        this.isLoadingGreeting = false;
+      }
+    });
   }
 
   loadProducts(): void {

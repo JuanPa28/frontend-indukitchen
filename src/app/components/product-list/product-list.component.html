@@ -23,6 +23,23 @@
       </div>
     </header>
 
+    <!-- Saludo personalizado con IA -->
+    <div class="ai-greeting-container" *ngIf="!isLoadingGreeting && greetingMessage">
+      <div class="ai-greeting">
+        <span class="greeting-emoji">🧑🏼‍🍳</span>
+        <p class="greeting-text">{{ greetingMessage }}</p>
+        <span class="greeting-emoji">🍳</span>
+      </div>
+    </div>
+
+    <!-- Loading Greeting -->
+    <div class="ai-greeting-container" *ngIf="isLoadingGreeting">
+      <div class="ai-greeting loading">
+        <span class="greeting-emoji">🤖</span>
+        <p class="greeting-text">Preparando tu saludo personalizado...</p>
+      </div>
+    </div>
+
     <!-- Loading -->
     <div class="center" *ngIf="isLoading">
       <output class="spinner-border" aria-hidden="true"></output>

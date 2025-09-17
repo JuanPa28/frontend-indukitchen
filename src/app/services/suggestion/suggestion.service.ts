@@ -26,13 +26,13 @@ export class SuggestionService {
     };
 
     // Hacer la petición esperando texto plano
-    return this.http.post(this.apiUrl, requestData, { 
-      headers, 
+    return this.http.post(this.apiUrl, requestData, {
+      headers,
       responseType: 'text' // Especificar que esperamos texto
     }).pipe(
       map((textResponse: string) => {
         console.log('📥 Respuesta de texto recibida:', textResponse);
-        
+
         // Intentar parsear como JSON primero
         try {
           const jsonResponse = JSON.parse(textResponse);
@@ -49,7 +49,7 @@ export class SuggestionService {
       }),
       catchError((error: any) => {
         console.error('❌ Error detallado en getSuggestions:', error);
-        
+
         // Si hay texto en el error, intentar usarlo
         if (error.error && typeof error.error === 'string') {
           console.log('📝 Usando texto del error como respuesta');
@@ -58,7 +58,7 @@ export class SuggestionService {
             suggestions: []
           } as SuggestionResponse);
         }
-        
+
         // Error genérico
         return of({
           message: 'Lo siento, hubo un error al procesar tu solicitud. Por favor, intenta con una descripción diferente.',
