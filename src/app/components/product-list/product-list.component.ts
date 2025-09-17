@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductoDto } from '../../services/product/product.dto';
 import { ProductoService } from '../../services/product/product.service';
-import { DetailDto } from '../../services/detail/detail.dto';
-import { CarritoService } from '../../services/cart/cart.service';
+import { LocalCartService } from '../../services/cart/local-cart.service';
+import { AiChatComponent } from '../ai-chat/ai-chat.component';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AiChatComponent],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
@@ -29,7 +29,7 @@ export class ProductListComponent implements OnInit {
   errorMessage: string = '';
 
   constructor(private readonly productoService: ProductoService,
-  private readonly carritoService: CarritoService) { }
+  private readonly localCartService: LocalCartService) { }
 
   ngOnInit(): void {
     this.loadProducts();
@@ -111,35 +111,126 @@ export class ProductListComponent implements OnInit {
   }
 
   addToCart(product: ProductoDto): void {
-    const detalle: DetailDto = {
-      idProducto: product.id,
-      cantidad: 1,
-      producto: product
-    };
+    console.log('🛍️ Agregando producto al carrito local:', product.nombre);
 
-    // Aquí necesitarías el idCarrito (lo puedes manejar en localStorage o crear uno nuevo si no existe)
-    const carritoId = localStorage.getItem('carritoId');
+    const success = this.localCartService.addProduct(product, 1);
 
-    if (carritoId) {
-      this.carritoService.addDetalle(carritoId, detalle).subscribe({
-        next: (carrito) => {
-          console.log('Carrito actualizado:', carrito);
-          alert(`¡${product.nombre} agregado al carrito!`);
-        },
-        error: (err) => console.error('Error al agregar al carrito', err)
-      });
+    if (success) {
+      console.log('✅ Producto agregado exitosamente al carrito local');
+      this.showSuccessMessage(product.nombre);
     } else {
-      // crear carrito nuevo
-      const nuevoCarrito = { detalles: [detalle] };
-      this.carritoService.create(nuevoCarrito).subscribe({
-        next: (carrito) => {
-          localStorage.setItem('carritoId', carrito.id!);
-          console.log('Carrito creado:', carrito);
-          alert(`¡${product.nombre} agregado al carrito!`);
-        },
-        error: (err) => console.error('Error al crear carrito', err)
-      });
+      console.error('❌ Error al agregar producto al carrito local');
+      this.showErrorMessage('Error al agregar el producto al carrito');
     }
+  }
+
+  private showSuccessMessage(productName: string): void {
+    // Crear un mensaje visual temporal
+    const message = document.createElement('div');
+    message.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #059669, #10b981);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 600;
+        max-width: 300px;
+        animation: slideIn 0.3s ease-out;
+      ">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">✅</span>
+          <span>¡${productName} agregado al carrito!</span>
+        </div>
+      </div>
+    `;
+
+    // Agregar estilos de animación si no existen
+    if (!document.getElementById('toast-styles')) {
+      const styles = document.createElement('style');
+      styles.id = 'toast-styles';
+      styles.innerHTML = `
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slideOut {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(styles);
+    }
+
+    document.body.appendChild(message);
+
+    // Remover el mensaje después de 3 segundos
+    setTimeout(() => {
+      if (message.parentNode) {
+        message.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+          if (message.parentNode) {
+            message.parentNode.removeChild(message);
+          }
+        }, 300);
+      }
+    }, 3000);
+  }
+
+  private showErrorMessage(errorText: string): void {
+    const message = document.createElement('div');
+    message.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 600;
+        max-width: 300px;
+        animation: slideIn 0.3s ease-out;
+      ">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">❌</span>
+          <span>${errorText}</span>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(message);
+
+    setTimeout(() => {
+      if (message.parentNode) {
+        message.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+          if (message.parentNode) {
+            message.parentNode.removeChild(message);
+          }
+        }, 300);
+      }
+    }, 3000);
   }
 
     viewDetails(product: ProductoDto): void {
