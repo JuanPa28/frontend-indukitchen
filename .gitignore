@@ -1,5 +1,3 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
-
 # Compiled output
 /dist
 /tmp
@@ -10,6 +8,7 @@
 /node_modules
 npm-debug.log
 yarn-error.log
+.angular
 
 # IDEs and editors
 .idea/
@@ -27,6 +26,8 @@ yarn-error.log
 !.vscode/launch.json
 !.vscode/extensions.json
 .history/*
+.editorconfig
+editorconfig
 
 # Miscellaneous
 /.angular/cache
@@ -44,3 +45,7 @@ Thumbs.db
 # SonarQube
 .sonar/
 sonar-project.properties
+.coverage/
+.scannerwork
+.scannerwork/
+.scannerwork/**

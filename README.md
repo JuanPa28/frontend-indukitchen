@@ -1,59 +1,121 @@
-# FrontendIndukitchen
+# Frontend InduKitchen
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.1.
+Aplicación frontend desarrollada con Angular 20. Incluye componentes para login, registro y listado de productos, además de servicios para autenticación y consumo de un backend de productos.
 
-## Development server
+## Stack principal
 
-To start a local development server, run:
+- Angular 20 (CLI)
+- TypeScript
+- Firebase Authentication (login)
+- Karma + Jasmine para pruebas unitarias
+- SonarQube / SonarCloud para análisis estático y cobertura
 
-```bash
-ng serve
-```
+## Estructura del repositorio
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- `src/` — código fuente Angular
+- `src/app/components/` — componentes: login, register, product-list, etc.
+- `src/app/services/` — servicios: auth, product, cart
+- `coverage/` — artefactos de cobertura generados por Karma
+- `sonar-project.properties` — configuración base para SonarQube
 
-## Code scaffolding
+## Instalación y ejecución
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+1. Instalar dependencias:
+   ```powershell
+   npm install
+   ```
+2. Levantar el servidor de desarrollo:
+   ```powershell
+   ng serve
+   ```
+3. Abrir [http://localhost:4200/](http://localhost:4200/) en el navegador.
 
-```bash
-ng generate component component-name
-```
+## Pruebas unitarias
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- Test runner: Karma
+- Framework: Jasmine
+- Comandos principales:
+  ```powershell
+  # Modo desarrollo (watch)
+  ng test
+  # Ejecución única (CI)
+  ng test --watch=false
+  ```
 
-```bash
-ng generate --help
-```
+## Cobertura
 
-## Building
+- Los reportes se generan en `coverage/frontend-indukitchen/`.
+- El archivo `lcov.info` se utiliza para SonarQube.
+- Para abrir el reporte HTML localmente:
+  ```powershell
+  ng test --watch=false
+  # luego abrir coverage/frontend-indukitchen/index.html
+  ```
 
-To build the project run:
+## Pruebas y técnicas utilizadas
 
-```bash
-ng build
-```
+- Pruebas de componentes con `TestBed` y `createComponent`.
+- Mocks de servicios con `jasmine.createSpyObj` o `spyOn`.
+- Control de asincronía con `fakeAsync`, `tick` y `flushMicrotasks`.
+- Cobertura de manejo de errores, wrappers y guards.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Archivos de tests relevantes
 
-## Running unit tests
+- `src/app/components/login/login.component.spec.ts` — login y errores
+- `src/app/components/product-list/product-list.component.spec.ts` — productos, filtros y paginación
+- `src/app/auth.guard.spec.ts` — guard y autenticación
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Integración con SonarQube / SonarCloud
 
-```bash
-ng test
-```
+1. Generar el reporte `lcov` con Karma (`karma.conf.js` debe exportar a `coverage/`).
+2. Ajustar `sonar-project.properties` si se usa el scanner:
+   ```
+   sonar.projectKey=frontend-indukitchen
+   sonar.sources=src
+   sonar.tests=src
+   sonar.javascript.lcov.reportPaths=coverage/frontend-indukitchen/lcov.info
+   sonar.scm.provider=git
+   ```
+3. Ejecutar Sonar Scanner localmente o desde CI:
+   ```powershell
+   # SonarScanner instalado
+   sonar-scanner -Dsonar.projectKey=frontend-indukitchen -Dsonar.sources=src -Dsonar.tests=src -Dsonar.javascript.lcov.reportPaths=coverage/frontend-indukitchen/lcov.info
+   # Docker
+   docker run --rm -e SONAR_HOST_URL="https://sonarcloud.io" -e SONAR_TOKEN="<TOKEN>" -v "%cd%":/usr/src sonarsource/sonar-scanner-cli
+   ```
 
-## Running end-to-end tests
+### Nota sobre "Missing blame information"
 
-For end-to-end (e2e) testing, run:
+SonarQube requiere `git blame` para asignar autores. Si aparecen advertencias:
 
-```bash
-ng e2e
-```
+- En CI usar `actions/checkout` con `fetch-depth: 0`.
+- Ejecutar el scanner en la raíz del repositorio (donde está `.git`).
+- Verificar que `git` esté instalado en el runner.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Detalles del proyecto
 
-## Additional Resources
+- Autenticación: login con correo/contraseña y soporte para providers vía Firebase Authentication.
+- Visualización de productos: listado con búsqueda, filtros, paginación y detalles.
+- Carrito de compras: agregar, eliminar y ver total; la factura se genera en el backend.
+- Chat con IA: integración cliente-side hacia un servicio de IA en el backend (ej. GPT).
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Cobertura destacada (local)
+
+- `src/app/auth.guard.ts` — 100%
+- `src/environments/environments.ts` — 100%
+- `src/app/components/login/login.component.ts` — 100%
+- `src/app/components/product-list/product-list.component.ts` — 100%
+- `src/app/components/register/register.component.ts` — 100%
+
+## Diseño de pruebas (resumen)
+
+- Cobertura de rutas críticas, manejo de errores y comportamientos UI sin depender de un backend real.
+- Mocking: uso de spies y objetos mock en lugar de llamadas de red (ej. `spyOn(productoService, 'getAll').and.returnValue(of(mockProducts))`).
+- Pruebas asíncronas: uso de `fakeAsync` + `flushMicrotasks` + `tick` para controlar promesas y timers.
+- Guards: uso de `TestBed.runInInjectionContext` y mocks de `Auth` para simular `onAuthStateChanged`.
+
+---
+
+Hecho con Angular — Frontend InduKitchen
+
+© 2025 InduKitchen. Todos los derechos reservados.

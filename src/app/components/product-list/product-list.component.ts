@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { ProductoDto } from '../../services/product/product.dto';
 import { ProductoService } from '../../services/product/product.service';
 
@@ -9,7 +11,7 @@ import { ProductoService } from '../../services/product/product.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './product-list.component.html',
-  styleUrl: './product-list.component.scss'
+  styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent implements OnInit {
   products: ProductoDto[] = [];
@@ -35,37 +37,37 @@ export class ProductListComponent implements OnInit {
   loadProducts(): void {
     this.isLoading = true;
     this.errorMessage = '';
-    this.productoService.getAll().subscribe({
-      next: (productos) => {
+    this.productoService
+      .getAll()
+      .pipe(
+        catchError((error) => {
+          this.errorMessage = 'Error cargando productos del backend';
+          this.isLoading = false;
+          console.error('Error loading products:', error && (error.message || error));
+          return of([] as ProductoDto[]);
+        })
+      )
+      .subscribe((productos) => {
         this.products = productos;
         this.filteredProducts = [...productos];
         this.calculatePagination();
         this.isLoading = false;
-      },
-      error: (error) => {
-        this.errorMessage = 'Error cargando productos del backend';
-        this.isLoading = false;
-        console.error('Error loading products:', error);
-      }
-    });
+      });
   }
 
   extractCategories(): void {
-    // Si tienes categorías en el DTO, agrégalas aquí
-    // Ejemplo: this.categories = Array.from(new Set(this.products.map(p => p.categoria)));
-    this.categories = []; // Ajusta según tu backend
+    this.categories = [];
   }
 
   applyFilters(): void {
     let filtered = [...this.products];
 
-    // Filtrar por búsqueda
     if (this.searchTerm) {
       const searchLower = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(product =>
-        product.nombre.toLowerCase().includes(searchLower) ||
-        product.descripcion.toLowerCase().includes(searchLower)
-        // Si tienes categoría, agrégala aquí
+      filtered = filtered.filter(
+        (product) =>
+          product.nombre.toLowerCase().includes(searchLower) ||
+          product.descripcion.toLowerCase().includes(searchLower)
       );
     }
 
@@ -118,11 +120,11 @@ export class ProductListComponent implements OnInit {
   }
 
   handleImageError(event: any): void {
-    const placeholder = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhjY2NjIiBvcGFjaXR5PSIwLjMiLz4KICA8dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNzc3Nzc3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zNWVtIj5JbWFnZW4gbm8gZGlzcG9uaWJsZTwvdGV4dD4KPC9zdmc+';
+    const placeholder =
+      'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhjY2NjIiBvcGFjaXR5PSIwLjMiLz4KICA8dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNzc3Nzc3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iMC4zNWVtIj5JbWFnZW4gbm8gZGlzcG9uaWJsZTwvdGV4dD4KPC9zdmc+';
     event.target.src = placeholder;
   }
 
-  // Si tienes categorías, ajusta este método
   getCategoryDisplayName(category: string): string {
     return category;
   }

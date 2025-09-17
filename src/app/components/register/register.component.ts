@@ -1,21 +1,19 @@
 // src/app/components/register/register.component.ts
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
-
+import { Auth } from '@angular/fire/auth';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
-  // Datos del formulario basados en el backend
   userData = {
     email: '',
     password: '',
@@ -24,7 +22,7 @@ export class RegisterComponent {
     lastName: '',
     phone: '',
     dni: '',
-    address: ''
+    address: '',
   };
 
   errorMessage: string = '';
@@ -33,11 +31,11 @@ export class RegisterComponent {
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
-  private router = inject(Router);
-  private auth = inject(Auth);
+  private readonly router = inject(Router);
+  private readonly auth = inject(Auth);
+  private readonly authService = inject(AuthService);
 
   onSubmit(): void {
-    // Validaciones simples con if
     if (!this.validateForm()) {
       return;
     }
@@ -45,21 +43,19 @@ export class RegisterComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // Registrar usuario en Firebase Auth
-    createUserWithEmailAndPassword(
-      this.auth,
-      this.userData.email,
-      this.userData.password
-    ).then((userCredential) => {
-      this.isLoading = false;
-      this.successMessage = '¡Registro exitoso! Redirigiendo al login...';
-      setTimeout(() => {
-        this.router.navigate(['/login']);
-      }, 2000);
-    }).catch((error) => {
-      this.isLoading = false;
-      this.errorMessage = error.message || 'Error en el registro. Por favor, intenta nuevamente.';
-    });
+    this.authService
+      .register(this.userData.email, this.userData.password)
+      .then((userCredential) => {
+        this.isLoading = false;
+        this.successMessage = '¡Registro exitoso! Redirigiendo al login...';
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
+      })
+      .catch((error) => {
+        this.isLoading = false;
+        this.errorMessage = error.message || 'Error en el registro. Por favor, intenta nuevamente.';
+      });
   }
 
   togglePasswordVisibility(): void {
@@ -71,47 +67,44 @@ export class RegisterComponent {
   }
 
   private validateForm(): boolean {
-    // Validar que todos los campos estén llenos
     const fields = Object.values(this.userData);
-    if (fields.some(field => !field || field.toString().trim() === '')) {
+    if (fields.some((field) => !field || field.toString().trim() === '')) {
       this.errorMessage = 'Todos los campos son obligatorios';
       return false;
     }
 
-    // Validar email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]{1,64}@[A-Za-z0-9.-]{1,255}\.[A-Za-z]{2,}$/;
     if (!emailRegex.test(this.userData.email)) {
       this.errorMessage = 'Por favor ingresa un email válido';
       return false;
     }
 
-    // Validar contraseñas
     if (this.userData.password !== this.userData.confirmPassword) {
       this.errorMessage = 'Las contraseñas no coinciden';
       return false;
     }
 
-    // Validar longitud de contraseña
     if (this.userData.password.length < 6) {
       this.errorMessage = 'La contraseña debe tener al menos 6 caracteres';
       return false;
     }
 
-    // Validar teléfono (solo números, mínimo 10 dígitos)
-    const phoneRegex = /^[0-9]+$/;
+    const phoneRegex = /^\d+$/;
     if (!phoneRegex.test(this.userData.phone) || this.userData.phone.length < 10) {
       this.errorMessage = 'Teléfono no válido (solo números, mínimo 10 dígitos)';
       return false;
     }
 
-    // Validar DNI (solo números, 8-12 dígitos)
-    const dniRegex = /^[0-9]+$/;
-    if (!dniRegex.test(this.userData.dni) || this.userData.dni.length < 8 || this.userData.dni.length > 12) {
+    const dniRegex = /^\d+$/;
+    if (
+      !dniRegex.test(this.userData.dni) ||
+      this.userData.dni.length < 8 ||
+      this.userData.dni.length > 12
+    ) {
       this.errorMessage = 'DNI no válido (solo números, 8-12 dígitos)';
       return false;
     }
 
-    // Validar nombre y apellido (solo letras y espacios)
     const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     if (!nameRegex.test(this.userData.name)) {
       this.errorMessage = 'El nombre solo puede contener letras y espacios';

@@ -10,13 +10,11 @@
 
     <main class="card">
       <form (ngSubmit)="onSubmit()" class="register-form" novalidate>
-        <!-- Mensaje success -->
         <div class="form-alert success" *ngIf="successMessage" role="alert">
           <i class="fas fa-check-circle"></i>
           <span>{{ successMessage }}</span>
         </div>
 
-        <!-- Sección: Información Personal -->
         <section class="section">
           <div class="section-header">
             <i class="fas fa-user"></i>
@@ -25,26 +23,41 @@
 
           <div class="row">
             <div class="col">
-              <label class="label">Nombre *</label>
+              <label class="label" for="name">Nombre *</label>
               <div class="form-field">
                 <i class="field-icon fas fa-user" aria-hidden="true"></i>
-                <input type="text" class="field-input" [(ngModel)]="userData.name" name="name"
-                       placeholder="Ej: Juan" required aria-required="true" />
+                <input
+                  id="name"
+                  type="text"
+                  class="field-input"
+                  [(ngModel)]="userData.name"
+                  name="name"
+                  placeholder="Ej: Juan"
+                  required
+                  aria-required="true"
+                />
               </div>
             </div>
 
             <div class="col">
-              <label class="label">Apellido *</label>
+              <label class="label" for="lastName">Apellido *</label>
               <div class="form-field">
                 <i class="field-icon fas fa-user" aria-hidden="true"></i>
-                <input type="text" class="field-input" [(ngModel)]="userData.lastName" name="lastName"
-                       placeholder="Ej: Pérez" required aria-required="true" />
+                <input
+                  id="lastName"
+                  type="text"
+                  class="field-input"
+                  [(ngModel)]="userData.lastName"
+                  name="lastName"
+                  placeholder="Ej: Pérez"
+                  required
+                  aria-required="true"
+                />
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Sección: Información de Contacto -->
         <section class="section">
           <div class="section-header">
             <i class="fas fa-envelope"></i>
@@ -53,26 +66,41 @@
 
           <div class="row">
             <div class="col">
-              <label class="label">Email *</label>
+              <label class="label" for="email">Email *</label>
               <div class="form-field">
                 <i class="field-icon fas fa-envelope" aria-hidden="true"></i>
-                <input type="email" class="field-input" [(ngModel)]="userData.email" name="email"
-                       placeholder="ejemplo@correo.com" required aria-required="true" />
+                <input
+                  id="email"
+                  type="email"
+                  class="field-input"
+                  [(ngModel)]="userData.email"
+                  name="email"
+                  placeholder="ejemplo@correo.com"
+                  required
+                  aria-required="true"
+                />
               </div>
             </div>
 
             <div class="col">
-              <label class="label">Teléfono *</label>
+              <label class="label" for="phone">Teléfono *</label>
               <div class="form-field">
                 <i class="field-icon fas fa-phone" aria-hidden="true"></i>
-                <input type="tel" class="field-input" [(ngModel)]="userData.phone" name="phone"
-                       placeholder="300 1234567" required aria-required="true" />
+                <input
+                  id="phone"
+                  type="tel"
+                  class="field-input"
+                  [(ngModel)]="userData.phone"
+                  name="phone"
+                  placeholder="300 1234567"
+                  required
+                  aria-required="true"
+                />
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Sección: Datos de Identificación -->
         <section class="section">
           <div class="section-header">
             <i class="fas fa-id-card"></i>
@@ -81,26 +109,41 @@
 
           <div class="row">
             <div class="col">
-              <label class="label">DNI/Cédula *</label>
+              <label class="label" for="dni">DNI/Cédula *</label>
               <div class="form-field">
                 <i class="field-icon fas fa-id-card" aria-hidden="true"></i>
-                <input type="text" class="field-input" [(ngModel)]="userData.dni" name="dni"
-                       placeholder="123456789" required aria-required="true" />
+                <input
+                  id="dni"
+                  type="text"
+                  class="field-input"
+                  [(ngModel)]="userData.dni"
+                  name="dni"
+                  placeholder="123456789"
+                  required
+                  aria-required="true"
+                />
               </div>
             </div>
 
             <div class="col">
-              <label class="label">Dirección *</label>
+              <label class="label" for="address">Dirección *</label>
               <div class="form-field">
                 <i class="field-icon fas fa-home" aria-hidden="true"></i>
-                <input type="text" class="field-input" [(ngModel)]="userData.address" name="address"
-                       placeholder="Calle 123 # 45-67" required aria-required="true" />
+                <input
+                  id="address"
+                  type="text"
+                  class="field-input"
+                  [(ngModel)]="userData.address"
+                  name="address"
+                  placeholder="Calle 123 # 45-67"
+                  required
+                  aria-required="true"
+                />
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Sección: Seguridad -->
         <section class="section">
           <div class="section-header">
             <i class="fas fa-lock"></i>
@@ -109,38 +152,70 @@
 
           <div class="row">
             <div class="col">
-              <label class="label">Contraseña *</label>
+              <label class="label" for="password">Contraseña *</label>
               <div class="form-field has-toggle">
                 <i class="field-icon fas fa-lock" aria-hidden="true"></i>
-                <input [type]="showPassword ? 'text' : 'password'" class="field-input"
-                       [(ngModel)]="userData.password" name="password" placeholder="Mínimo 6 caracteres" required aria-required="true" />
-                <button type="button" class="toggle-btn" (click)="togglePasswordVisibility()" aria-label="Mostrar contraseña">
-                  <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+                <input
+                  id="password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="field-input"
+                  [(ngModel)]="userData.password"
+                  name="password"
+                  placeholder="Mínimo 6 caracteres"
+                  required
+                  aria-required="true"
+                />
+                <button
+                  type="button"
+                  class="toggle-btn"
+                  (click)="togglePasswordVisibility()"
+                  aria-label="Mostrar contraseña"
+                >
+                  <i
+                    class="fas"
+                    [class.fa-eye]="!showPassword"
+                    [class.fa-eye-slash]="showPassword"
+                  ></i>
                 </button>
               </div>
             </div>
 
             <div class="col">
-              <label class="label">Confirmar Contraseña *</label>
+              <label class="label" for="confirmPassword">Confirmar Contraseña *</label>
               <div class="form-field has-toggle">
                 <i class="field-icon fas fa-lock" aria-hidden="true"></i>
-                <input [type]="showConfirmPassword ? 'text' : 'password'" class="field-input"
-                       [(ngModel)]="userData.confirmPassword" name="confirmPassword" placeholder="Repite tu contraseña" required aria-required="true" />
-                <button type="button" class="toggle-btn" (click)="toggleConfirmPasswordVisibility()" aria-label="Mostrar confirmar contraseña">
-                  <i class="fas" [class.fa-eye]="!showConfirmPassword" [class.fa-eye-slash]="showConfirmPassword"></i>
+                <input
+                  id="confirmPassword"
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  class="field-input"
+                  [(ngModel)]="userData.confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Repite tu contraseña"
+                  required
+                  aria-required="true"
+                />
+                <button
+                  type="button"
+                  class="toggle-btn"
+                  (click)="toggleConfirmPasswordVisibility()"
+                  aria-label="Mostrar confirmar contraseña"
+                >
+                  <i
+                    class="fas"
+                    [class.fa-eye]="!showConfirmPassword"
+                    [class.fa-eye-slash]="showConfirmPassword"
+                  ></i>
                 </button>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Mensaje de error -->
         <div class="form-alert error" *ngIf="errorMessage" role="alert">
           <i class="fas fa-exclamation-circle"></i>
           <span>{{ errorMessage }}</span>
         </div>
 
-        <!-- CTA -->
         <div class="form-actions">
           <button type="submit" class="btn primary" [disabled]="isLoading">
             <ng-container *ngIf="!isLoading">

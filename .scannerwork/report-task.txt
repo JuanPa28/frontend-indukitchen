@@ -1,6 +1,6 @@
-projectKey=frontend-indukitchen
+projectKey=sonarqube-fronted
 serverUrl=http://localhost:9000
 serverVersion=25.9.0.112764
-dashboardUrl=http://localhost:9000/dashboard?id=frontend-indukitchen
-ceTaskId=b41e7d5e-c4ec-4a0c-b1a0-275b7da25de6
-ceTaskUrl=http://localhost:9000/api/ce/task?id=b41e7d5e-c4ec-4a0c-b1a0-275b7da25de6
+dashboardUrl=http://localhost:9000/dashboard?id=sonarqube-fronted
+ceTaskId=69fbada0-fca3-4fd7-8596-dc5d7b1e989a
+ceTaskUrl=http://localhost:9000/api/ce/task?id=69fbada0-fca3-4fd7-8596-dc5d7b1e989a

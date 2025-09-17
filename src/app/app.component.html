@@ -1,6 +1,4 @@
 <div class="app-root">
-
-  <!-- Navbar: sólo visible cuando isLoggedIn() es true (igual que antes) -->
   <nav class="topbar navbar navbar-expand-lg" *ngIf="isLoggedIn()">
     <div class="container">
       <a class="brand" routerLink="/">
@@ -8,8 +6,15 @@
         <span class="brand-text">InduKitchen</span>
       </a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-              aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#mainNav"
+        aria-controls="mainNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
 
@@ -24,7 +29,6 @@
             </a>
           </li>
 
-          <!-- Links de sesión (mantengo los mismos links que tenías) -->
           <li class="nav-item d-lg-inline d-none">
             <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
           </li>
@@ -43,7 +47,6 @@
     </div>
   </nav>
 
-  <!-- Main content (router) -->
   <main class="app-main container mt-4">
     <router-outlet></router-outlet>
   </main>

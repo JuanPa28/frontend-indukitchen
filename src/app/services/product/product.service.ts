@@ -4,12 +4,11 @@ import { Observable } from 'rxjs';
 import { ProductoDto } from './product.dto';
 import { environment } from '../../../environments/environments';
 
-
 @Injectable({ providedIn: 'root' })
 export class ProductoService {
-  private apiUrl = `${environment.apiBase}productos`;
+  private readonly apiUrl = `${environment.apiBase}productos`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getAll(): Observable<ProductoDto[]> {
     return this.http.get<ProductoDto[]>(this.apiUrl);

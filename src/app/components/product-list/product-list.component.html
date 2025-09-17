@@ -1,7 +1,5 @@
 <div class="products-wrap">
   <div class="products-shell">
-
-    <!-- Header -->
     <header class="products-header">
       <div class="products-title">
         <h2>Nuestros Productos</h2>
@@ -11,66 +9,86 @@
       <div class="products-controls">
         <div class="search">
           <label class="visually-hidden" for="product-search">Buscar productos</label>
-          <input id="product-search" type="search"
-                 class="search-input"
-                 placeholder="Buscar productos..."
-                 [(ngModel)]="searchTerm"
-                 (input)="applyFilters()"
-                 aria-label="Buscar productos" />
+          <input
+            id="product-search"
+            type="search"
+            class="search-input"
+            placeholder="Buscar productos..."
+            [(ngModel)]="searchTerm"
+            (input)="applyFilters()"
+            aria-label="Buscar productos"
+          />
           <i class="fas fa-search search-icon" aria-hidden="true"></i>
         </div>
-        <!-- Si más filtros: colócalos aquí sin romper la lógica -->
       </div>
     </header>
 
-    <!-- Loading -->
     <div class="center" *ngIf="isLoading">
       <output class="spinner-border" aria-hidden="true"></output>
       <p class="muted mt-2">Cargando productos...</p>
     </div>
 
-    <!-- Empty -->
     <div *ngIf="!isLoading && filteredProducts.length === 0" class="alert info">
       <i class="fas fa-info-circle"></i>
       <span>No se encontraron productos que coincidan con tu búsqueda.</span>
     </div>
 
-    <!-- Grid -->
-    <section *ngIf="!isLoading && filteredProducts.length > 0" class="product-grid" aria-live="polite">
+    <section
+      *ngIf="!isLoading && filteredProducts.length > 0"
+      class="product-grid"
+      aria-live="polite"
+    >
       <article class="product-card" *ngFor="let product of paginatedProducts">
         <div class="media">
           <div class="image-wrap">
             <img [src]="product.imagen" [alt]="product.nombre" (error)="handleImageError($event)" />
           </div>
-          <span class="stock-badge"
-                [ngClass]="{
-                  'stock-high': product.existencia > 10,
-                  'stock-medium': product.existencia > 0 && product.existencia <= 10,
-                  'stock-out': product.existencia === 0
-                }" aria-hidden="true">
-            {{ product.existencia > 0 ? (product.existencia + (product.existencia === 1 ? ' en stock' : ' en stock')) : 'Agotado' }}
+          <span
+            class="stock-badge"
+            [ngClass]="{
+              'stock-high': product.existencia > 10,
+              'stock-medium': product.existencia > 0 && product.existencia <= 10,
+              'stock-out': product.existencia === 0
+            }"
+            aria-hidden="true"
+          >
+            {{
+              product.existencia > 0
+                ? product.existencia + (product.existencia === 1 ? ' en stock' : ' en stock')
+                : 'Agotado'
+            }}
           </span>
         </div>
 
         <div class="body">
           <h3 class="name" title="{{ product.nombre }}">{{ product.nombre }}</h3>
-          <p class="desc" title="{{ product.descripcion }}">{{ truncateText(product.descripcion, 100) }}</p>
+          <p class="desc" title="{{ product.descripcion }}">
+            {{ truncateText(product.descripcion, 100) }}
+          </p>
 
           <div class="meta">
-            <div class="price">{{ product.precio | currency:'COP ':'symbol':'1.0-0' }}</div>
-            <div class="weight"><i class="fas fa-weight-hanging" aria-hidden="true"></i> {{ product.peso }} kg</div>
+            <div class="price">{{ product.precio | currency : 'COP ' : 'symbol' : '1.0-0' }}</div>
+            <div class="weight">
+              <i class="fas fa-weight-hanging" aria-hidden="true"></i> {{ product.peso }} kg
+            </div>
           </div>
 
           <div class="actions">
-            <button class="btn btn-primary"
-                    (click)="addToCart(product)"
-                    [disabled]="product.existencia === 0"
-                    aria-label="Agregar {{product.nombre}} al carrito">
+            <button
+              class="btn btn-primary"
+              (click)="addToCart(product)"
+              [disabled]="product.existencia === 0"
+              aria-label="Agregar {{ product.nombre }} al carrito"
+            >
               <i class="fas fa-shopping-cart"></i>
               <span>{{ product.existencia > 0 ? 'Agregar al carrito' : 'Agotado' }}</span>
             </button>
 
-            <button class="btn btn-ghost" (click)="viewDetails(product)" aria-label="Ver detalles de {{product.nombre}}">
+            <button
+              class="btn btn-ghost"
+              (click)="viewDetails(product)"
+              aria-label="Ver detalles de {{ product.nombre }}"
+            >
               <i class="fas fa-eye"></i>
               <span>Ver detalles</span>
             </button>
@@ -79,11 +97,16 @@
       </article>
     </section>
 
-    <!-- Pagination -->
-    <nav *ngIf="!isLoading && filteredProducts.length > 0 && totalPages > 1" class="pagination-wrap" aria-label="Paginación de productos">
+    <nav
+      *ngIf="!isLoading && filteredProducts.length > 0 && totalPages > 1"
+      class="pagination-wrap"
+      aria-label="Paginación de productos"
+    >
       <ul class="pagination">
         <li class="page" [class.disabled]="currentPage === 1">
-          <a (click)="changePage(currentPage - 1)" aria-label="Página anterior"><i class="fas fa-chevron-left"></i></a>
+          <a (click)="changePage(currentPage - 1)" aria-label="Página anterior"
+            ><i class="fas fa-chevron-left"></i
+          ></a>
         </li>
 
         <li class="page" *ngFor="let page of getPages()" [class.active]="page === currentPage">
@@ -91,10 +114,11 @@
         </li>
 
         <li class="page" [class.disabled]="currentPage === totalPages">
-          <a (click)="changePage(currentPage + 1)" aria-label="Página siguiente"><i class="fas fa-chevron-right"></i></a>
+          <a (click)="changePage(currentPage + 1)" aria-label="Página siguiente"
+            ><i class="fas fa-chevron-right"></i
+          ></a>
         </li>
       </ul>
     </nav>
-
   </div>
 </div>
