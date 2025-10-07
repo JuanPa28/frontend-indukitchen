@@ -49,3 +49,7 @@ sonar-project.properties
 .scannerwork
 .scannerwork/
 .scannerwork/**
+.scannerwork/report-task.txt
+.hintrc
+
+karma.conf.js

@@ -1,10 +1,13 @@
-// src/app/components/register/register.component.ts
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Auth } from '@angular/fire/auth';
 import { AuthService } from '../../services/auth/auth.service';
+import { ClienteService } from '../../services/client/client.service';
+import { ClienteDto } from '../../services/client/client.dto';
+import { forkJoin, firstValueFrom } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-register',
@@ -34,8 +37,9 @@ export class RegisterComponent {
   private readonly router = inject(Router);
   private readonly auth = inject(Auth);
   private readonly authService = inject(AuthService);
+  private readonly clienteService = inject(ClienteService);
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (!this.validateForm()) {
       return;
     }
@@ -43,19 +47,57 @@ export class RegisterComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.authService
-      .register(this.userData.email, this.userData.password)
-      .then((userCredential) => {
+    const dni = this.userData.dni.trim();
+    const email = this.userData.email.trim().toLowerCase();
+
+    try {
+      const dupChecks = await firstValueFrom(
+        forkJoin({
+          dniTaken: this.clienteService.existsByCedula(dni),
+          emailTaken: this.clienteService.existsByCorreo(email),
+        })
+      );
+
+      if (dupChecks.dniTaken) {
         this.isLoading = false;
-        this.successMessage = '¡Registro exitoso! Redirigiendo al login...';
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 2000);
-      })
-      .catch((error) => {
+        this.errorMessage = 'La cédula ya está registrada.';
+        return;
+      }
+      if (dupChecks.emailTaken) {
         this.isLoading = false;
-        this.errorMessage = error.message || 'Error en el registro. Por favor, intenta nuevamente.';
-      });
+        this.errorMessage = 'El correo ya está registrado.';
+        return;
+      }
+
+      await this.authService.register(this.userData.email, this.userData.password);
+
+      const cliente: ClienteDto = {
+        cedula: dni,
+        nombre: `${this.userData.name.trim()} ${this.userData.lastName.trim()}`.trim(),
+        direccion: this.userData.address.trim(),
+        correo: email,
+        telefono: this.userData.phone.trim(),
+      };
+
+      await firstValueFrom(
+        this.clienteService.create(cliente).pipe(
+          catchError((err) => {
+            const msg =
+              err?.status === 409
+                ? 'La cédula o correo ya existe en el sistema.'
+                : 'La cuenta fue creada, pero no se pudo guardar el cliente. Intenta nuevamente más tarde.';
+            throw new Error(msg);
+          })
+        )
+      );
+
+      this.isLoading = false;
+      this.successMessage = '¡Registro exitoso! Redirigiendo al login...';
+      setTimeout(() => this.router.navigate(['/login']), 2000);
+    } catch (error: any) {
+      this.isLoading = false;
+      this.errorMessage = error?.message || 'Error en el registro. Por favor, intenta nuevamente.';
+    }
   }
 
   togglePasswordVisibility(): void {

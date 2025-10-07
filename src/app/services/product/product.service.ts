@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ProductoDto } from './product.dto';
 import { environment } from '../../../environments/environments';
+import { ProductoDto } from './product.dto';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class ProductoService {
   private readonly apiUrl = `${environment.apiBase}productos`;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(@Inject(HttpClient) private readonly http: HttpClient) {}
 
   getAll(): Observable<ProductoDto[]> {
     return this.http.get<ProductoDto[]>(this.apiUrl);
@@ -18,8 +18,19 @@ export class ProductoService {
     return this.http.get<ProductoDto>(`${this.apiUrl}/${id}`);
   }
 
-  add(producto: ProductoDto): Observable<ProductoDto> {
+  create(producto: ProductoDto): Observable<ProductoDto> {
     return this.http.post<ProductoDto>(this.apiUrl, producto);
+  }
+
+  add(producto: ProductoDto): Observable<ProductoDto> {
+    return this.create(producto);
+  }
+
+  update(producto: ProductoDto): Observable<ProductoDto> {
+    if (!producto.id || producto.id <= 0) {
+      throw new Error('El producto a actualizar debe tener un id válido');
+    }
+    return this.http.put<ProductoDto>(`${this.apiUrl}/${producto.id}`, producto);
   }
 
   delete(id: number): Observable<void> {

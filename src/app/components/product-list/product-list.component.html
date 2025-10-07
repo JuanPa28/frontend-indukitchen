@@ -23,6 +23,21 @@
       </div>
     </header>
 
+    <div class="ai-greeting-container" *ngIf="!isLoadingGreeting && greetingMessage">
+      <div class="ai-greeting">
+        <span class="greeting-emoji">🧑🏼‍🍳</span>
+        <p class="greeting-text">{{ greetingMessage }}</p>
+        <span class="greeting-emoji">🍳</span>
+      </div>
+    </div>
+
+    <div class="ai-greeting-container" *ngIf="isLoadingGreeting">
+      <div class="ai-greeting loading">
+        <span class="greeting-emoji">🤖</span>
+        <p class="greeting-text">Preparando tu saludo...</p>
+      </div>
+    </div>
+
     <div class="center" *ngIf="isLoading">
       <output class="spinner-border" aria-hidden="true"></output>
       <p class="muted mt-2">Cargando productos...</p>
@@ -41,7 +56,12 @@
       <article class="product-card" *ngFor="let product of paginatedProducts">
         <div class="media">
           <div class="image-wrap">
-            <img [src]="product.imagen" [alt]="product.nombre" (error)="handleImageError($event)" />
+            <img
+              [src]="product.imagen"
+              [alt]="product.nombre"
+              [title]="product.nombre"
+              (error)="handleImageError($event)"
+            />
           </div>
           <span
             class="stock-badge"
@@ -122,3 +142,5 @@
     </nav>
   </div>
 </div>
+
+<app-ai-chat></app-ai-chat>

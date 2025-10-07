@@ -1,0 +1,265 @@
+<div class="cart-container">
+  <!-- Título principal -->
+  <div class="cart-header">
+    <h1 class="cart-title">
+      <span class="cart-icon">🛒</span>
+      Carrito de Compras
+    </h1>
+  </div>
+
+  <div *ngIf="items.length > 0; else emptyCart" class="cart-content">
+    <div *ngIf="isLoading" class="loading-indicator">
+      <div class="spinner"></div>
+      <span>Actualizando carrito...</span>
+    </div>
+
+    <div class="cart-items" [class.loading]="isLoading">
+      <h2 class="section-title">
+        Productos Seleccionados
+        <span class="item-count">({{ items.length }} item{{ items.length !== 1 ? 's' : '' }})</span>
+      </h2>
+      <div class="items-list">
+        <div *ngFor="let item of items; trackBy: trackByProductId" class="cart-item">
+          <div class="product-card">
+            <div class="product-image">
+              <img
+                [src]="item.producto.imagen || 'assets/placeholder.png'"
+                [alt]="item.producto.nombre || 'producto genérico'"
+                [title]="item.producto.nombre || 'producto genérico'"
+                (error)="handleImageError($event)"
+              />
+            </div>
+
+            <div class="product-info">
+              <h4 class="product-name">{{ item.producto.nombre }}</h4>
+              <p class="product-description">{{ item.producto.descripcion }}</p>
+
+              <div class="price-quantity">
+                <div class="price">
+                  <span class="unit-price">{{
+                    item.producto.precio | currency : 'COP' : 'symbol' : '1.0-0'
+                  }}</span>
+                  <span class="quantity-text">x {{ item.cantidad }}</span>
+                </div>
+                <div class="subtotal">
+                  {{ item.producto.precio * item.cantidad | currency : 'COP' : 'symbol' : '1.0-0' }}
+                </div>
+              </div>
+            </div>
+
+            <div class="product-actions">
+              <div class="quantity-controls">
+                <button
+                  type="button"
+                  class="qty-btn"
+                  (click)="updateQuantity(item.idProducto, item.cantidad - 1)"
+                  [disabled]="item.cantidad <= 1"
+                >
+                  -
+                </button>
+                <span class="quantity">{{ item.cantidad }}</span>
+                <button
+                  type="button"
+                  class="qty-btn"
+                  (click)="updateQuantity(item.idProducto, item.cantidad + 1)"
+                >
+                  +
+                </button>
+              </div>
+
+              <button
+                type="button"
+                class="remove-btn"
+                (click)="removeProduct(item.idProducto)"
+                title="Eliminar producto"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-summary">
+      <div class="summary-card">
+        <h3 class="summary-title">Resumen del Pedido</h3>
+        <div class="total-amount">
+          <span class="total-label">Total:</span>
+          <span class="total-value">{{ total | currency : 'COP' : 'symbol' : '1.0-0' }}</span>
+        </div>
+        <div class="cart-actions">
+          <button class="btn btn-outline" (click)="clearCart()">
+            <span class="btn-icon">🗑️</span>
+            Vaciar carrito
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="customer-form">
+      <h3 class="form-title">Información del Cliente</h3>
+      <form class="client-form" [formGroup]="clientForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="cedula" class="form-label">Cédula *</label>
+          <input
+            type="text"
+            id="cedula"
+            class="form-input"
+            formControlName="cedula"
+            placeholder="Ingresa tu número de cédula"
+            maxlength="10"
+          />
+          <div
+            *ngIf="clientForm.get('cedula')?.errors?.['required'] && clientForm.get('cedula')?.touched"
+            class="error-message"
+          >
+            La cédula es requerida
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="nombre" class="form-label">Nombre Completo *</label>
+          <input
+            type="text"
+            id="nombre"
+            class="form-input"
+            formControlName="nombre"
+            placeholder="Ingresa tu nombre completo"
+          />
+          <div
+            *ngIf="clientForm.get('nombre')?.errors?.['required'] && clientForm.get('nombre')?.touched"
+            class="error-message"
+          >
+            El nombre es requerido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="direccion" class="form-label">Dirección *</label>
+          <textarea
+            id="direccion"
+            class="form-textarea"
+            formControlName="direccion"
+            placeholder="Ingresa tu dirección completa"
+            rows="3"
+          ></textarea>
+          <div
+            *ngIf="clientForm.get('direccion')?.errors?.['required'] && clientForm.get('direccion')?.touched"
+            class="error-message"
+          >
+            La dirección es requerida
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="correo" class="form-label">Correo Electrónico *</label>
+          <input
+            type="email"
+            id="correo"
+            class="form-input"
+            formControlName="correo"
+            placeholder="correo@ejemplo.com"
+          />
+          <div
+            *ngIf="clientForm.get('correo')?.errors?.['required'] && clientForm.get('correo')?.touched"
+            class="error-message"
+          >
+            El correo es requerido
+          </div>
+          <div
+            *ngIf="clientForm.get('correo')?.errors?.['email'] && clientForm.get('correo')?.touched"
+            class="error-message"
+          >
+            Ingresa un correo válido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="telefono" class="form-label">Teléfono *</label>
+          <input
+            type="tel"
+            id="telefono"
+            class="form-input"
+            formControlName="telefono"
+            placeholder="Ingresa tu número de teléfono"
+            maxlength="10"
+          />
+          <div
+            *ngIf="clientForm.get('telefono')?.errors?.['required'] && clientForm.get('telefono')?.touched"
+            class="error-message"
+          >
+            El teléfono es requerido
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="metodoPago" class="form-label">Método de Pago (opcional)</label>
+          <select id="metodoPago" class="form-input" formControlName="metodoPago">
+            <option value="">Selecciona un método</option>
+            <option [ngValue]="1">Tarjeta de Crédito</option>
+            <option [ngValue]="2">Transferencia</option>
+            <option [ngValue]="3">Efectivo</option>
+          </select>
+        </div>
+
+        <div class="toggle-row">
+          <input type="checkbox" id="enviarOtroEmail" formControlName="enviarOtroEmail" />
+          <label for="enviarOtroEmail">Enviar factura a otro correo</label>
+        </div>
+
+        <div class="payment-box" *ngIf="clientForm.get('enviarOtroEmail')?.value">
+          <div class="form-group">
+            <label for="emailTo" class="form-label">Correo alterno</label>
+            <input
+              type="email"
+              id="emailTo"
+              class="form-input"
+              formControlName="emailTo"
+              placeholder="otro@correo.com"
+            />
+          </div>
+          <div class="form-group">
+            <label for="emailSubject" class="form-label">Asunto (opcional)</label>
+            <input
+              type="text"
+              id="emailSubject"
+              class="form-input"
+              formControlName="emailSubject"
+              placeholder="Gracias por tu compra"
+            />
+          </div>
+          <div class="form-group">
+            <label for="emailText" class="form-label">Mensaje (opcional)</label>
+            <textarea
+              id="emailText"
+              class="form-input"
+              rows="3"
+              formControlName="emailText"
+              placeholder="Texto adicional del correo"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="!clientForm.valid || items.length === 0 || isLoading"
+          >
+            <span class="btn-icon">✅</span>
+            Finalizar Compra
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <ng-template #emptyCart>
+    <div class="empty-cart">
+      <div class="empty-cart-icon">🛒</div>
+      <h2 class="empty-cart-title">Tu carrito está vacío</h2>
+      <p class="empty-cart-text">Agrega algunos productos para comenzar tu compra</p>
+    </div>
+  </ng-template>
+</div>

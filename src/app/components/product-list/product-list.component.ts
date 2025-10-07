@@ -5,11 +5,14 @@ import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ProductoDto } from '../../services/product/product.dto';
 import { ProductoService } from '../../services/product/product.service';
+import { LocalCartService } from '../../services/cart/local-cart.service';
+import { HelloService } from '../../services/hello/hello.service';
+import { AiChatComponent } from '../ai-chat/ai-chat.component';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AiChatComponent],
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss'],
 })
@@ -18,7 +21,6 @@ export class ProductListComponent implements OnInit {
   filteredProducts: ProductoDto[] = [];
   categories: string[] = [];
 
-  // Filtros y búsqueda
   searchTerm: string = '';
   selectedCategory: string = '';
   currentPage: number = 1;
@@ -28,10 +30,34 @@ export class ProductListComponent implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
 
-  constructor(private readonly productoService: ProductoService) {}
+  greetingMessage: string = '';
+  isLoadingGreeting: boolean = true;
+
+  constructor(
+    private readonly productoService: ProductoService,
+    private readonly localCartService: LocalCartService,
+    private readonly helloService: HelloService
+  ) {}
 
   ngOnInit(): void {
+    this.loadGreeting();
     this.loadProducts();
+  }
+
+  loadGreeting(): void {
+    this.isLoadingGreeting = true;
+    this.helloService.getPersonalizedGreeting().subscribe({
+      next: (greeting) => {
+        this.greetingMessage = greeting;
+        this.isLoadingGreeting = false;
+      },
+      error: (error) => {
+        console.error('Error cargando saludo:', error);
+        this.greetingMessage =
+          '¡Bienvenido a IndukItchen! Descubre nuestros mejores productos para tu hogar.';
+        this.isLoadingGreeting = false;
+      },
+    });
   }
 
   loadProducts(): void {
@@ -110,8 +136,123 @@ export class ProductListComponent implements OnInit {
   }
 
   addToCart(product: ProductoDto): void {
-    console.log('Producto agregado al carrito:', product);
-    alert(`¡${product.nombre} agregado al carrito!`);
+    console.log('🛍️ Agregando producto al carrito local:', product.nombre);
+    window.alert('Producto agregado');
+    const success = this.localCartService.addProduct(product, 1);
+
+    if (success) {
+      console.log('✅ Producto agregado exitosamente al carrito local');
+      this.showSuccessMessage(product.nombre);
+    } else {
+      console.error('❌ Error al agregar producto al carrito local');
+      this.showErrorMessage('Error al agregar el producto al carrito');
+    }
+  }
+
+  private showSuccessMessage(productName: string): void {
+    const message = document.createElement('div');
+    message.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #059669, #10b981);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 600;
+        max-width: 300px;
+        animation: slideIn 0.3s ease-out;
+      ">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">✅</span>
+          <span>¡${productName} agregado al carrito!</span>
+        </div>
+      </div>
+    `;
+
+    if (!document.getElementById('toast-styles')) {
+      const styles = document.createElement('style');
+      styles.id = 'toast-styles';
+      styles.innerHTML = `
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slideOut {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(styles);
+    }
+
+    document.body.appendChild(message);
+
+    setTimeout(() => {
+      if (message.parentNode) {
+        message.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+          if (message.parentNode) {
+            message.parentNode.removeChild(message);
+          }
+        }, 300);
+      }
+    }, 3000);
+  }
+
+  private showErrorMessage(errorText: string): void {
+    const message = document.createElement('div');
+    message.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 600;
+        max-width: 300px;
+        animation: slideIn 0.3s ease-out;
+      ">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">❌</span>
+          <span>${errorText}</span>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(message);
+
+    setTimeout(() => {
+      if (message.parentNode) {
+        message.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+          if (message.parentNode) {
+            message.parentNode.removeChild(message);
+          }
+        }, 300);
+      }
+    }, 3000);
   }
 
   viewDetails(product: ProductoDto): void {

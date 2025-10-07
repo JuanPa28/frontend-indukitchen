@@ -1,0 +1,88 @@
+<div class="chat-container" [class.expanded]="isExpanded">
+  <button
+    *ngIf="!isExpanded"
+    class="chat-toggle-btn"
+    (click)="toggleChat()"
+    aria-label="Abrir chat de recomendaciones"
+  >
+    <span class="chat-icon">🤖</span>
+    <span class="chat-text">Recomendaciones IA</span>
+  </button>
+
+  <div *ngIf="isExpanded" class="chat-window">
+    <div class="chat-header">
+      <div class="chat-title">
+        <span class="bot-avatar">🤖</span>
+        <div>
+          <h3>Asistente IA</h3>
+          <p>Recomendaciones personalizadas</p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="toggleChat()" aria-label="Cerrar chat">×</button>
+    </div>
+
+    <div class="chat-messages" #messagesContainer>
+      <div
+        *ngFor="let message of messages"
+        class="message"
+        [class.user-message]="message.type === 'user'"
+        [class.bot-message]="message.type === 'bot'"
+      >
+        <div class="message-content">
+          <p>{{ message.content }}</p>
+
+          <div *ngIf="message.suggestions && message.suggestions.length > 0" class="suggestions">
+            <div *ngFor="let product of message.suggestions" class="suggestion-card">
+              <img
+                [src]="product.imagen || '/assets/placeholder-product.jpg'"
+                [alt]="product.nombre"
+                (error)="handleImageError($event)"
+                class="suggestion-image"
+              />
+              <div class="suggestion-info">
+                <h4>{{ product.nombre }}</h4>
+                <p class="price">\${{ product.precio | number : '1.0-0' }}</p>
+                <button class="add-btn" (click)="addToCart(product)" [disabled]="isAddingToCart">
+                  <span *ngIf="!isAddingToCart">+ Agregar</span>
+                  <span *ngIf="isAddingToCart">...</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="message-time">
+          {{ message.timestamp | date : 'short' }}
+        </div>
+      </div>
+
+      <div *ngIf="isLoading" class="message bot-message">
+        <div class="message-content">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input
+        type="text"
+        [(ngModel)]="currentMessage"
+        (keyup.enter)="sendMessage()"
+        placeholder="Describe lo que buscas..."
+        [disabled]="isLoading"
+        class="message-input"
+      />
+      <button
+        (click)="sendMessage()"
+        [disabled]="isLoading || !currentMessage.trim()"
+        class="send-btn"
+      >
+        📤
+      </button>
+    </div>
+  </div>
+</div>

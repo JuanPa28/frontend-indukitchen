@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth.guard';
+import { adminGuard } from './admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -20,6 +21,15 @@ export const routes: Routes = [
       ),
     canActivate: [authGuard],
   },
-  // { path: 'cart', loadComponent: () => import('./components/cart/cart.component').then(m => m.CartComponent), canActivate: [authGuard] },
+  {
+    path: 'cart',
+    loadComponent: () => import('./components/cart/cart.component').then((m) => m.CarritoComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('./components/admin/admin.component').then((m) => m.AdminComponent),
+    canActivate: [authGuard, adminGuard],
+  },
   { path: '**', redirectTo: '/products' },
 ];

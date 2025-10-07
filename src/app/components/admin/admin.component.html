@@ -1,0 +1,607 @@
+<div class="admin-shell" [class.nav-collapsed]="navCollapsed">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="navCollapsed" aria-label="Menú de administración">
+    <div class="brand">
+      <span class="icon">🍳</span>
+      <span class="text" *ngIf="!navCollapsed">InduKitchen Admin</span>
+    </div>
+
+    <button
+      class="collapse-btn"
+      (click)="toggleNav()"
+      [attr.aria-expanded]="!navCollapsed"
+      aria-label="Colapsar o expandir menú de administración"
+    >
+      <i
+        class="fas"
+        [class.fa-angles-left]="!navCollapsed"
+        [class.fa-angles-right]="navCollapsed"
+      ></i>
+    </button>
+
+    <nav class="menu">
+      <ul>
+        <li *ngFor="let s of sections" [class.active]="activeSection === s.key">
+          <button
+            (click)="setSection(s.key)"
+            [attr.aria-current]="activeSection === s.key ? 'page' : null"
+          >
+            <i class="fas" [ngClass]="s.icon"></i>
+            <span class="label" *ngIf="!navCollapsed">{{ s.label }}</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="admin-content">
+    <section *ngIf="activeSection === 'dashboard'">
+      <header class="admin-header">
+        <h1>Dashboard</h1>
+      </header>
+
+      <section class="messages">
+        <div class="alert error" *ngIf="dashError">
+          <i class="fas fa-exclamation-circle"></i> {{ dashError }}
+        </div>
+      </section>
+
+      <div class="panel">
+        <div class="stat-cards" *ngIf="!dashLoading; else dashLoadingTpl">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Clientes</span>
+              <span class="stat-value">{{ stats.totalClientes }}</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-box"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Productos</span>
+              <span class="stat-value">{{ stats.totalProductos }}</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-file-invoice"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Facturas</span>
+              <span class="stat-value">{{ stats.totalFacturas }}</span>
+            </div>
+          </div>
+
+          <div class="stat-card success">
+            <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Ventas</span>
+              <span class="stat-value">{{
+                stats.totalVentas | currency : 'COP' : 'symbol' : '1.0-0'
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #dashLoadingTpl>
+          <div class="loading"><span class="spinner"></span> Cargando resumen...</div>
+        </ng-template>
+      </div>
+    </section>
+
+    <!-- CLIENTES -->
+    <section *ngIf="activeSection === 'clientes'">
+      <div class="admin-wrap">
+        <header class="admin-header">
+          <h1>Gestión de Clientes</h1>
+          <div class="actions">
+            <div class="search">
+              <i class="fas fa-search" aria-hidden="true"></i>
+              <input
+                type="text"
+                [(ngModel)]="searchTerm"
+                (input)="applyFilter()"
+                placeholder="Buscar por cédula o nombre..."
+                aria-label="Buscar clientes"
+              />
+            </div>
+            <button class="btn primary" (click)="openCreateForm()">
+              <i class="fas fa-user-plus"></i> Nuevo Cliente
+            </button>
+          </div>
+        </header>
+
+        <section class="messages">
+          <div class="alert success" *ngIf="successMessage">
+            <i class="fas fa-check-circle"></i> {{ successMessage }}
+          </div>
+          <div class="alert error" *ngIf="errorMessage">
+            <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+          </div>
+        </section>
+
+        <section class="content">
+          <div class="panel form-panel" *ngIf="showForm">
+            <h2 class="panel-title">
+              <i class="fas" [class.fa-user-edit]="isEditing" [class.fa-user-plus]="!isEditing"></i>
+              {{ isEditing ? 'Editar Cliente' : 'Crear Cliente' }}
+            </h2>
+
+            <form (ngSubmit)="submitForm()" novalidate>
+              <div class="grid">
+                <div class="field">
+                  <label for="cedula">Cédula *</label>
+                  <input
+                    id="cedula"
+                    type="text"
+                    [(ngModel)]="formData.cedula"
+                    name="cedula"
+                    [readonly]="isEditing"
+                    placeholder="Ej: 1234567890"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="nombre">Nombre *</label>
+                  <input
+                    id="nombre"
+                    type="text"
+                    [(ngModel)]="formData.nombre"
+                    name="nombre"
+                    placeholder="Nombre completo"
+                    required
+                  />
+                </div>
+
+                <div class="field full">
+                  <label for="direccion">Dirección *</label>
+                  <input
+                    id="direccion"
+                    type="text"
+                    [(ngModel)]="formData.direccion"
+                    name="direccion"
+                    placeholder="Dirección"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="correo">Correo *</label>
+                  <input
+                    id="correo"
+                    type="email"
+                    [(ngModel)]="formData.correo"
+                    name="correo"
+                    placeholder="correo@ejemplo.com"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="telefono">Teléfono *</label>
+                  <input
+                    id="telefono"
+                    type="tel"
+                    [(ngModel)]="formData.telefono"
+                    name="telefono"
+                    placeholder="3001234567"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn primary" [disabled]="isLoading">
+                  <ng-container *ngIf="!isLoading">
+                    <i class="fas fa-save"></i> {{ isEditing ? 'Actualizar' : 'Crear' }}
+                  </ng-container>
+                  <ng-container *ngIf="isLoading">
+                    <span class="spinner"></span> Guardando...
+                  </ng-container>
+                </button>
+                <button
+                  type="button"
+                  class="btn ghost"
+                  (click)="closeForm()"
+                  [disabled]="isLoading"
+                >
+                  <i class="fas fa-times"></i> Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel list-panel">
+            <h2 class="panel-title"><i class="fas fa-users"></i> Listado de clientes</h2>
+
+            <div class="table-wrap" *ngIf="!isLoading; else loadingTpl">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Cédula</th>
+                    <th>Nombre</th>
+                    <th>Dirección</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th class="actions-col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let c of filteredClients; trackBy: trackByCedula">
+                    <td>{{ c.cedula }}</td>
+                    <td>{{ c.nombre }}</td>
+                    <td>
+                      <span class="truncate" [title]="c.direccion">{{ c.direccion }}</span>
+                    </td>
+                    <td>{{ c.correo }}</td>
+                    <td>{{ c.telefono }}</td>
+                    <td class="actions">
+                      <button class="btn small" (click)="openEditForm(c)">
+                        <i class="fas fa-edit"></i> Editar
+                      </button>
+                      <button class="btn small danger" (click)="confirmDelete(c)">
+                        <i class="fas fa-trash"></i> Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="filteredClients.length === 0">
+                    <td colspan="6" class="empty">No hay clientes para mostrar.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ng-template #loadingTpl>
+              <div class="loading"><span class="spinner"></span> Cargando clientes...</div>
+            </ng-template>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- Productos -->
+    <section *ngIf="activeSection === 'productos'">
+      <div class="admin-wrap">
+        <header class="admin-header">
+          <h1>Gestión de Productos</h1>
+          <div class="actions">
+            <div class="search">
+              <i class="fas fa-search" aria-hidden="true"></i>
+              <input
+                type="text"
+                [(ngModel)]="productSearchTerm"
+                name="productSearchTerm"
+                (input)="applyProductFilter()"
+                placeholder="Buscar por nombre o descripción..."
+                aria-label="Buscar productos"
+              />
+            </div>
+            <button class="btn primary" (click)="openCreateProductForm()">
+              <i class="fas fa-box"></i> Nuevo Producto
+            </button>
+          </div>
+        </header>
+
+        <section class="messages">
+          <div class="alert success" *ngIf="pSuccessMessage">
+            <i class="fas fa-check-circle"></i> {{ pSuccessMessage }}
+          </div>
+          <div class="alert error" *ngIf="pErrorMessage">
+            <i class="fas fa-exclamation-circle"></i> {{ pErrorMessage }}
+          </div>
+        </section>
+
+        <section class="content">
+          <div class="panel form-panel" *ngIf="showProductForm">
+            <h2 class="panel-title">
+              <i class="fas fa-box-open"></i>
+              {{ isEditingProduct ? 'Editar Producto' : 'Crear Producto' }}
+            </h2>
+
+            <form (ngSubmit)="submitProductForm()" novalidate>
+              <div class="grid">
+                <div class="field">
+                  <label for="pNombre">Nombre *</label>
+                  <input
+                    id="pNombre"
+                    type="text"
+                    [(ngModel)]="productFormData.nombre"
+                    name="pNombre"
+                    required
+                  />
+                </div>
+
+                <div class="field full">
+                  <label for="pDescripcion">Descripción *</label>
+                  <input
+                    id="pDescripcion"
+                    type="text"
+                    [(ngModel)]="productFormData.descripcion"
+                    name="pDescripcion"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="pPrecio">Precio (COP) *</label>
+                  <input
+                    id="pPrecio"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    [(ngModel)]="productFormData.precio"
+                    name="pPrecio"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="pExistencia">Existencia *</label>
+                  <input
+                    id="pExistencia"
+                    type="number"
+                    min="0"
+                    [(ngModel)]="productFormData.existencia"
+                    name="pExistencia"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="pPeso">Peso (kg) *</label>
+                  <input
+                    id="pPeso"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    [(ngModel)]="productFormData.peso"
+                    name="pPeso"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="pImagen">URL Imagen</label>
+                  <input
+                    id="pImagen"
+                    type="url"
+                    [(ngModel)]="productFormData.imagen"
+                    name="pImagen"
+                    placeholder="https://..."
+                  />
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn primary" [disabled]="pIsLoading">
+                  <ng-container *ngIf="!pIsLoading">
+                    <i class="fas fa-save"></i> {{ isEditingProduct ? 'Actualizar' : 'Crear' }}
+                  </ng-container>
+                  <ng-container *ngIf="pIsLoading">
+                    <span class="spinner"></span> Guardando...
+                  </ng-container>
+                </button>
+                <button
+                  type="button"
+                  class="btn ghost"
+                  (click)="closeProductForm()"
+                  [disabled]="pIsLoading"
+                >
+                  <i class="fas fa-times"></i> Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel list-panel">
+            <h2 class="panel-title"><i class="fas fa-boxes-stacked"></i> Listado de productos</h2>
+
+            <div class="table-wrap" *ngIf="!pIsLoading; else pLoadingTpl">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Existencia</th>
+                    <th>Peso (kg)</th>
+                    <th class="actions-col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let p of filteredProducts; trackBy: trackByProductId">
+                    <td>{{ p.id }}</td>
+                    <td>
+                      <img
+                        [src]="p.imagen || productPlaceholder"
+                        alt="{{ p.nombre }}"
+                        (error)="onProductImageError($event)"
+                        class="image-thumb"
+                      />
+                    </td>
+                    <td>{{ p.nombre }}</td>
+                    <td>
+                      <span class="truncate" [title]="p.descripcion">{{ p.descripcion }}</span>
+                    </td>
+                    <td>{{ p.precio | currency : 'COP' : 'symbol' : '1.0-0' }}</td>
+                    <td>{{ p.existencia }}</td>
+                    <td>{{ p.peso }}</td>
+                    <td class="actions">
+                      <button class="btn small" (click)="openEditProductForm(p)">
+                        <i class="fas fa-edit"></i> Editar
+                      </button>
+                      <button class="btn small danger" (click)="confirmDeleteProduct(p)">
+                        <i class="fas fa-trash"></i> Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="filteredProducts.length === 0">
+                    <td colspan="8" class="empty">No hay productos para mostrar.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ng-template #pLoadingTpl>
+              <div class="loading"><span class="spinner"></span> Cargando productos...</div>
+            </ng-template>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- Facturas -->
+    <section *ngIf="activeSection === 'facturas'">
+      <div class="admin-wrap">
+        <header class="admin-header">
+          <h1>Gestión de Facturas</h1>
+          <div class="actions">
+            <button class="btn" (click)="loadFacturas()" [disabled]="fIsLoading">
+              <i class="fas fa-rotate"></i> Recargar
+            </button>
+          </div>
+        </header>
+
+        <section class="messages">
+          <div class="alert success" *ngIf="fSuccessMessage">
+            <i class="fas fa-check-circle"></i> {{ fSuccessMessage }}
+          </div>
+          <div class="alert error" *ngIf="fErrorMessage">
+            <i class="fas fa-exclamation-circle"></i> {{ fErrorMessage }}
+          </div>
+        </section>
+
+        <section class="content">
+          <div class="panel list-panel">
+            <h2 class="panel-title"><i class="fas fa-file-invoice"></i> Listado de facturas</h2>
+
+            <div class="table-wrap" *ngIf="!fIsLoading; else fLoadingTpl">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>ID Carrito</th>
+                    <th>Cliente</th>
+                    <th>Correo</th>
+                    <th class="actions-col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let f of facturas; trackBy: trackByFacturaId">
+                    <td>{{ f.id }}</td>
+                    <td>{{ f.idCarrito }}</td>
+                    <td>{{ f.clienteNombre || '—' }}</td>
+                    <td>{{ f.clienteCorreo || '—' }}</td>
+                    <td class="actions">
+                      <button class="btn small" (click)="viewFacturaPdf(f)">
+                        <i class="fas fa-file-pdf"></i> Ver PDF
+                      </button>
+                      <button class="btn small" (click)="sendFacturaEmail(f)">
+                        <i class="fas fa-envelope"></i> Enviar Email
+                      </button>
+                      <button class="btn small danger" (click)="confirmDeleteFactura(f)">
+                        <i class="fas fa-trash"></i> Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="facturas.length === 0">
+                    <td colspan="5" class="empty">No hay facturas para mostrar.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ng-template #fLoadingTpl>
+              <div class="loading"><span class="spinner"></span> Cargando facturas...</div>
+            </ng-template>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- Carritos -->
+    <section *ngIf="activeSection === 'carritos'">
+      <div class="admin-wrap">
+        <header class="admin-header">
+          <h1>Gestión de Carritos</h1>
+          <div class="actions">
+            <button class="btn" (click)="loadCarts()" [disabled]="cIsLoading">
+              <i class="fas fa-rotate"></i> Recargar
+            </button>
+          </div>
+        </header>
+
+        <section class="messages">
+          <div class="alert success" *ngIf="cSuccessMessage">
+            <i class="fas fa-check-circle"></i> {{ cSuccessMessage }}
+          </div>
+          <div class="alert error" *ngIf="cErrorMessage">
+            <i class="fas fa-exclamation-circle"></i> {{ cErrorMessage }}
+          </div>
+        </section>
+
+        <section class="content">
+          <div class="panel list-panel">
+            <h2 class="panel-title"><i class="fas fa-cart-shopping"></i> Listado de carritos</h2>
+
+            <div class="table-wrap" *ngIf="!cIsLoading; else cLoadingTpl">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Cédula Cliente</th>
+                    <th>Cliente</th>
+                    <th>Correo</th>
+                    <th>Productos</th>
+                    <th class="actions-col">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let c of carts; trackBy: trackByCartId">
+                    <td>{{ c.id }}</td>
+                    <td>{{ c.idCliente || c.cedula_cliente || '—' }}</td>
+                    <td>{{ c.clienteNombre || '—' }}</td>
+                    <td>{{ c.clienteCorreo || '—' }}</td>
+                    <td>{{ (c.productoCount ?? c.detalles.length) || 0 }}</td>
+                    <td class="actions">
+                      <button class="btn small" (click)="viewCartProducts(c)">
+                        <i class="fas fa-eye"></i> Ver
+                      </button>
+
+                      <ng-container *ngIf="!c.hasFactura; else cartLockedTpl">
+                        <button class="btn small danger" (click)="confirmDeleteCart(c)">
+                          <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                      </ng-container>
+                      <ng-template #cartLockedTpl>
+                        <span class="badge muted" title="Carrito con factura asociada">
+                          <i class="fas fa-lock"></i> Bloqueado
+                        </span>
+                      </ng-template>
+                    </td>
+                  </tr>
+                  <tr *ngIf="carts.length === 0">
+                    <td colspan="6" class="empty">No hay carritos para mostrar.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <ng-template #cLoadingTpl>
+              <div class="loading"><span class="spinner"></span> Cargando carritos...</div>
+            </ng-template>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section *ngIf="activeSection === 'pagos'">
+      <header class="admin-header"><h1>Pagos</h1></header>
+      <div class="panel"><p>Gestión de pagos (próximamente).</p></div>
+    </section>
+  </main>
+</div>

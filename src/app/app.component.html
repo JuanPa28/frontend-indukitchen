@@ -1,7 +1,7 @@
 <div class="app-root">
-  <nav class="topbar navbar navbar-expand-lg" *ngIf="isLoggedIn()">
+  <nav class="topbar navbar navbar-expand-lg" *ngIf="isLoggedIn()" role="navigation">
     <div class="container">
-      <a class="brand" routerLink="/">
+      <a class="brand" routerLink="/" aria-label="Ir al inicio">
         <span class="brand-icon" aria-hidden="true">🍳</span>
         <span class="brand-text">InduKitchen</span>
       </a>
@@ -13,32 +13,38 @@
         data-bs-target="#mainNav"
         aria-controls="mainNav"
         aria-expanded="false"
-        aria-label="Toggle navigation"
+        aria-label="Abrir menú de navegación"
       >
-        <span class="navbar-toggler-icon"></span>
+        <span class="navbar-toggler-icon"><span></span></span>
       </button>
 
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-auto align-items-lg-center">
           <li class="nav-item">
-            <a class="nav-link" routerLink="/products" routerLinkActive="active">Productos</a>
+            <a class="nav-link" routerLink="/products" routerLinkActive="active">
+              <i class="fas fa-box-open me-1" aria-hidden="true"></i> Productos
+            </a>
           </li>
           <li class="nav-item">
             <a class="nav-link" routerLink="/cart" routerLinkActive="active">
-              <i class="fas fa-shopping-cart me-1"></i> Carrito
+              <i class="fas fa-shopping-cart me-1" aria-hidden="true"></i> Carrito
             </a>
           </li>
 
           <li class="nav-item d-lg-inline d-none">
-            <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
+            <a class="nav-link" routerLink="/login" routerLinkActive="active">
+              <i class="fas fa-sign-in-alt me-1" aria-hidden="true"></i> Login
+            </a>
           </li>
           <li class="nav-item d-lg-inline d-none">
-            <a class="nav-link" routerLink="/register" routerLinkActive="active">Registro</a>
+            <a class="nav-link" routerLink="/register" routerLinkActive="active">
+              <i class="fas fa-user-plus me-1" aria-hidden="true"></i> Registro
+            </a>
           </li>
 
           <li class="nav-item ms-2">
-            <button class="btn btn-ghost" (click)="logout()">
-              <i class="fas fa-sign-out-alt me-1"></i>
+            <button class="btn btn-ghost btn-logout" (click)="logout()">
+              <i class="fas fa-sign-out-alt me-1" aria-hidden="true"></i>
               Cerrar sesión
             </button>
           </li>
@@ -47,7 +53,12 @@
     </div>
   </nav>
 
-  <main class="app-main container mt-4">
+  <main
+    class="app-main"
+    [class.container]="!isAdminRoute"
+    [class.mt-4]="!isAdminRoute"
+    [class.container-fluid]="isAdminRoute"
+  >
     <router-outlet></router-outlet>
   </main>
 </div>

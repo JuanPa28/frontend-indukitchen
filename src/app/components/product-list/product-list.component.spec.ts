@@ -3,6 +3,7 @@ import { of, throwError } from 'rxjs';
 import { ProductListComponent } from './product-list.component';
 import { ProductoService } from '../../services/product/product.service';
 import { ProductoDto } from '../../services/product/product.dto';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ProductListComponent', () => {
   let component: ProductListComponent;
@@ -20,7 +21,7 @@ describe('ProductListComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [ProductListComponent],
+      imports: [ProductListComponent, HttpClientTestingModule],
       providers: [{ provide: ProductoService, useValue: productoServiceMock }],
     }).compileComponents();
 

@@ -3,6 +3,10 @@ import { RegisterComponent } from './register.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
 import { AuthService } from '../../services/auth/auth.service';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ClienteService } from '../../services/client/client.service';
+import { of } from 'rxjs';
 
 class RouterMock {
   navigate = jasmine.createSpy('navigate');
@@ -14,6 +18,7 @@ describe('RegisterComponent', () => {
   let router: RouterMock;
   let authMock: any;
   let authServiceMock: any;
+  let clienteServiceMock: any;
 
   beforeEach(async () => {
     router = new RouterMock();
@@ -21,13 +26,20 @@ describe('RegisterComponent', () => {
     authServiceMock = {
       register: jasmine.createSpy('register'),
     };
+    clienteServiceMock = {
+      existsByCedula: jasmine.createSpy('existsByCedula').and.returnValue(of(false)),
+      existsByCorreo: jasmine.createSpy('existsByCorreo').and.returnValue(of(false)),
+      create: jasmine.createSpy('create').and.returnValue(of({ id: 'cli-1' })),
+    };
 
     await TestBed.configureTestingModule({
-      imports: [RegisterComponent],
+      imports: [RegisterComponent, HttpClientTestingModule],
       providers: [
+        provideHttpClientTesting(),
         { provide: Router, useValue: router },
         { provide: Auth, useValue: authMock },
         { provide: AuthService, useValue: authServiceMock },
+        { provide: ClienteService, useValue: clienteServiceMock },
         { provide: ActivatedRoute, useValue: {} },
       ],
     }).compileComponents();
@@ -37,6 +49,7 @@ describe('RegisterComponent', () => {
     (component as any).auth = authMock;
     (component as any).authService = authServiceMock;
     (component as any).router = router;
+    (component as any).clienteService = clienteServiceMock;
   });
 
   it('debería inicializar el componente', () => {

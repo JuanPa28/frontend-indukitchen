@@ -21,70 +21,84 @@ Aplicación frontend desarrollada con Angular 20. Incluye componentes para login
 ## Instalación y ejecución
 
 1. Instalar dependencias:
+
    ```powershell
    npm install
    ```
+
 2. Levantar el servidor de desarrollo:
+
    ```powershell
    ng serve
    ```
+
 3. Abrir [http://localhost:4200/](http://localhost:4200/) en el navegador.
 
 ## Pruebas unitarias
 
-- Test runner: Karma
-- Framework: Jasmine
-- Comandos principales:
-  ```powershell
-  # Modo desarrollo (watch)
-  ng test
-  # Ejecución única (CI)
-  ng test --watch=false
-  ```
+```powershell
+# Modo desarrollo (watch)
+ng test
+
+# Ejecución única (CI/local)
+ng test --watch=false
+```
 
 ## Cobertura
 
-- Los reportes se generan en `coverage/frontend-indukitchen/`.
-- El archivo `lcov.info` se utiliza para SonarQube.
-- Para abrir el reporte HTML localmente:
-  ```powershell
-  ng test --watch=false
-  # luego abrir coverage/frontend-indukitchen/index.html
-  ```
+```powershell
+ng test --watch=false
+# luego abrir coverage/frontend-indukitchen/index.html
+```
 
 ## Pruebas y técnicas utilizadas
 
-- Pruebas de componentes con `TestBed` y `createComponent`.
-- Mocks de servicios con `jasmine.createSpyObj` o `spyOn`.
-- Control de asincronía con `fakeAsync`, `tick` y `flushMicrotasks`.
-- Cobertura de manejo de errores, wrappers y guards.
+- Dobles de prueba con `jasmine.createSpyObj` en servicios (p.ej. `ClienteService`, `ProductoService`, `FacturaService`, `CarritoService`, `SuggestionService`, `LocalCartService`) como en:
+  - [`src/app/components/admin/admin.component.spec.ts`](src/app/components/admin/admin.component.spec.ts)
+  - [`src/app/components/ai-chat/ai-chat.component.spec.ts`](src/app/components/ai-chat/ai-chat.component.spec.ts)
+- Control de asincronía:
+  - `fakeAsync` + `tick` para orquestar Promesas/Timers y flujos RxJS.
+  - Uso de `Subject` y `of`/`throwError` para simular emisiones y errores.
+- Pruebas de UI y utilidades:
+  - Paginación, truncado de texto, y manejo de imágenes de respaldo en [`src/app/components/product-list/product-list.component.spec.ts`](src/app/components/product-list/product-list.component.spec.ts).
+  - Toasts/avisos programáticos y handlers de errores.
+  - Funciones `trackBy*` y toggles de UI en [`src/app/components/admin/admin.component.spec.ts`](src/app/components/admin/admin.component.spec.ts).
+- Mapeo de errores HTTP a mensajes de negocio (404/409/500) cubierto en [`src/app/components/admin/admin.component.spec.ts`](src/app/components/admin/admin.component.spec.ts).
+- Cálculo de totales del dashboard con `forkJoin` + `switchMap` y fallback robusto, probado en [`src/app/components/admin/admin.component.spec.ts`](src/app/components/admin/admin.component.spec.ts).
+- Helpers de aserciones encadenables para mensajes del chat en [`src/app/components/ai-chat/ai-chat.component.spec.ts`](src/app/components/ai-chat/ai-chat.component.spec.ts).
 
 ### Archivos de tests relevantes
 
-- `src/app/components/login/login.component.spec.ts` — login y errores
-- `src/app/components/product-list/product-list.component.spec.ts` — productos, filtros y paginación
-- `src/app/auth.guard.spec.ts` — guard y autenticación
+- [`src/app/app.component.spec.ts`](src/app/app.component.spec.ts) — auth state y logout
+- [`src/app/components/admin/admin.component.spec.ts`](src/app/components/admin/admin.component.spec.ts) — dashboard, CRUD, errores y helpers
+- [`src/app/components/product-list/product-list.component.spec.ts`](src/app/components/product-list/product-list.component.spec.ts) — productos, filtros, paginación
+- [`src/app/components/register/register.component.spec.ts`](src/app/components/register/register.component.spec.ts) — validaciones y registro
+- [`src/app/components/ai-chat/ai-chat.component.spec.ts`](src/app/components/ai-chat/ai-chat.component.spec.ts) — chat, sugerencias y carrito
+- [`src/app/components/detail/detail.component.spec.ts`](src/app/components/detail/detail.component.spec.ts) — cantidades y eventos
 
 ## Integración con SonarQube / SonarCloud
 
-1. Generar el reporte `lcov` con Karma (`karma.conf.js` debe exportar a `coverage/`).
-2. Ajustar `sonar-project.properties` si se usa el scanner:
-   ```
-   sonar.projectKey=frontend-indukitchen
-   sonar.sources=src
-   sonar.tests=src
-   sonar.javascript.lcov.reportPaths=coverage/frontend-indukitchen/lcov.info
-   sonar.scm.provider=git
-   ```
-3. Ejecutar Sonar Scanner localmente o desde CI:
-   ```powershell
-   # SonarScanner instalado
-   sonar-scanner -Dsonar.projectKey=frontend-indukitchen -Dsonar.sources=src -Dsonar.tests=src -Dsonar.javascript.lcov.reportPaths=coverage/frontend-indukitchen/lcov.info
-   # Docker
-   docker run --rm -e SONAR_HOST_URL="https://sonarcloud.io" -e SONAR_TOKEN="<TOKEN>" -v "%cd%":/usr/src sonarsource/sonar-scanner-cli
-   ```
+Configuración básica en `sonar-project.properties`:
 
-### Nota sobre "Missing blame information"
+```properties
+sonar.projectKey=frontend-indukitchen
+sonar.sources=src
+sonar.tests=src
+sonar.javascript.lcov.reportPaths=coverage/frontend-indukitchen/lcov.info
+sonar.scm.provider=git
+```
+
+Ejemplo de ejecución:
+
+```powershell
+# SonarScanner instalado
+sonar-scanner -Dsonar.projectKey=frontend-indukitchen -Dsonar.sources=src -Dsonar.tests=src -Dsonar.javascript.lcov.reportPaths=coverage/frontend-indukitchen/lcov.info
+
+# Docker
+docker run --rm -e SONAR_HOST_URL="https://sonarcloud.io" -e SONAR_TOKEN="<TOKEN>" -v "%cd%":/usr/src sonarsource/sonar-scanner-cli
+```
+
+## Nota sobre "Missing blame information"
 
 SonarQube requiere `git blame` para asignar autores. Si aparecen advertencias:
 
@@ -101,18 +115,18 @@ SonarQube requiere `git blame` para asignar autores. Si aparecen advertencias:
 
 ## Cobertura destacada (local)
 
-- `src/app/auth.guard.ts` — 100%
-- `src/environments/environments.ts` — 100%
-- `src/app/components/login/login.component.ts` — 100%
-- `src/app/components/product-list/product-list.component.ts` — 100%
-- `src/app/components/register/register.component.ts` — 100%
+- [`src/app/components/login/login.component.ts`](src/app/components/login/login.component.ts) — alta cobertura
+- [`src/app/components/product-list/product-list.component.ts`](src/app/components/product-list/product-list.component.ts) — alta cobertura
+- [`src/app/components/register/register.component.ts`](src/app/components/register/register.component.ts) — alta cobertura
+- [`src/app/components/admin/admin.component.ts`](src/app/components/admin/admin.component.ts) — alta cobertura
+- [`src/app/admin.guard.ts`](src/app/admin.guard.ts) — alta cobertura
 
 ## Diseño de pruebas (resumen)
 
 - Cobertura de rutas críticas, manejo de errores y comportamientos UI sin depender de un backend real.
-- Mocking: uso de spies y objetos mock en lugar de llamadas de red (ej. `spyOn(productoService, 'getAll').and.returnValue(of(mockProducts))`).
-- Pruebas asíncronas: uso de `fakeAsync` + `flushMicrotasks` + `tick` para controlar promesas y timers.
-- Guards: uso de `TestBed.runInInjectionContext` y mocks de `Auth` para simular `onAuthStateChanged`.
+- Mocking: uso de spies/objetos mock en lugar de llamadas de red (ej. `spyOn(productoService, 'getAll').and.returnValue(of(mockProducts))`).
+- Pruebas asíncronas: `fakeAsync` + `tick` para controlar promesas y timers.
+- Autenticación: mocks de `Auth` y navegación para verificar flujos (ver [`src/app/app.component.spec.ts`](src/app/app.component.spec.ts)).
 
 ---
 
