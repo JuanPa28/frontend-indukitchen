@@ -44,7 +44,7 @@ Thumbs.db
 
 # SonarQube
 .sonar/
-sonar-project.properties
+# sonar-project.properties
 .coverage/
 .scannerwork
 .scannerwork/
@@ -52,4 +52,4 @@ sonar-project.properties
 .scannerwork/report-task.txt
 .hintrc
 
-karma.conf.js
+# karma.conf.js

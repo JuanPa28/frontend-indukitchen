@@ -53,7 +53,13 @@ export class LoginComponent {
       })
       .catch((error: any) => {
         this.isLoading = false;
-        this.errorMessage = error.message || 'Error en el login. Verifica tus credenciales.';
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+          this.errorMessage = 'Credenciales incorrectas. Verifica tu email y contraseña.';
+        } else if (error.code === 'auth/user-not-found') {
+          this.errorMessage = 'Usuario no encontrado.';
+        } else {
+          this.errorMessage = error.message || 'Error en el login. Verifica tus credenciales.';
+        }
       });
   }
 
