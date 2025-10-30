@@ -84,8 +84,21 @@ describe('Pruebas de Productos - Listado y Detalle', () => {
       cy.viewport('iphone-x');
       cy.visit('/products');
 
-      // Verificar que los productos se ven correctamente
+      // Verificar que los productos se ven correctamente en móvil
       cy.get('[data-testid="product-item"], .product-card, .product', { timeout: 10000 })
+        .should('be.visible');
+
+      // Verificar que el layout se adapta a móvil (debe haber 1 columna)
+      cy.get('[data-testid="product-item"], .product-card, .product').first().then(($el) => {
+        const width = $el.width();
+        // En móvil, los productos deben ocupar al menos el 80% del ancho
+        cy.viewport('iphone-x').then(() => {
+          expect(width).to.be.greaterThan(Cypress.config('viewportWidth') * 0.8);
+        });
+      });
+
+      // Verificar que el menú es tipo hamburguesa en móvil
+      cy.get('.mobile-menu, .hamburger, [data-testid="mobile-menu"]')
         .should('be.visible');
     });
 
@@ -93,8 +106,23 @@ describe('Pruebas de Productos - Listado y Detalle', () => {
       cy.viewport('ipad-2');
       cy.visit('/products');
 
-      // Verificar que los productos se ven correctamente
+      // Verificar que los productos se ven correctamente en tablet
       cy.get('[data-testid="product-item"], .product-card, .product', { timeout: 10000 })
+        .should('be.visible');
+
+      // Verificar que el layout se adapta a tablet (debe haber 2-3 columnas)
+      cy.get('[data-testid="product-item"], .product-card, .product').first().then(($el) => {
+        const width = $el.width();
+        // En tablet, los productos deben ocupar entre 30-45% del ancho
+        cy.viewport('ipad-2').then(() => {
+          const viewportWidth = Cypress.config('viewportWidth');
+          expect(width).to.be.lessThan(viewportWidth * 0.45);
+          expect(width).to.be.greaterThan(viewportWidth * 0.30);
+        });
+      });
+
+      // Verificar que existe navegación adaptada para tablet
+      cy.get('.tablet-nav, [data-testid="tablet-navigation"]')
         .should('be.visible');
     });
 
