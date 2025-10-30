@@ -2,12 +2,52 @@
 
 Aplicación frontend desarrollada con Angular 20. Incluye componentes para login, registro y listado de productos, además de servicios para autenticación y consumo de un backend de productos.
 
+## 🎯 NUEVO: Pruebas E2E con Cypress
+
+Este proyecto ahora incluye **130+ pruebas funcionales completas** con Cypress, cobertura de código y aserciones robustas.
+
+### 📚 Documentación de Pruebas Cypress
+
+- **[🚀 Quick Start](cypress/README.md)** - Guía rápida para comenzar
+- **[📖 Documentación Completa](CYPRESS_TESTING.md)** - Guía detallada de 400+ líneas
+- **[💡 Ejemplos Prácticos](EJEMPLOS_CYPRESS.md)** - Plantillas y patrones
+- **[📊 Resumen Ejecutivo](RESUMEN_PRUEBAS_CYPRESS.md)** - Métricas y estadísticas
+- **[🎯 Presentación](PRESENTACION_CYPRESS.md)** - Presentación del proyecto
+
+### ⚡ Comandos Rápidos de Cypress
+
+```bash
+# Modo interactivo (recomendado)
+npm run e2e:open
+
+# Ejecutar todas las pruebas
+npm run e2e
+
+# Con cobertura de código
+npm run cypress:coverage
+
+# Script helper interactivo
+./cypress-helper.sh
+```
+
+### 📊 Estadísticas de Pruebas
+
+| Métrica | Valor |
+|---------|-------|
+| Casos de Prueba | 130+ |
+| Cobertura Objetivo | >70% |
+| Archivos de Prueba | 5 |
+| Aserciones | 300+ |
+
+---
+
 ## Stack principal
 
 - Angular 20 (CLI)
 - TypeScript
 - Firebase Authentication (login)
 - Karma + Jasmine para pruebas unitarias
+- **Cypress para pruebas E2E** ✨ NUEVO
 - SonarQube / SonarCloud para análisis estático y cobertura
 
 ## Estructura del repositorio
@@ -15,7 +55,9 @@ Aplicación frontend desarrollada con Angular 20. Incluye componentes para login
 - `src/` — código fuente Angular
 - `src/app/components/` — componentes: login, register, product-list, etc.
 - `src/app/services/` — servicios: auth, product, cart
+- **`cypress/` — pruebas E2E con Cypress** ✨ NUEVO
 - `coverage/` — artefactos de cobertura generados por Karma
+- **`coverage-cypress/` — cobertura de Cypress** ✨ NUEVO
 - `sonar-project.properties` — configuración base para SonarQube
 
 ## Instalación y ejecución

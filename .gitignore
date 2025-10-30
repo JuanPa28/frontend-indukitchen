@@ -53,3 +53,11 @@ Thumbs.db
 .hintrc
 
 # karma.conf.js
+
+# Cypress
+cypress/videos
+cypress/screenshots
+cypress/downloads
+cypress.env.json
+coverage-cypress/
+.nyc_output/
